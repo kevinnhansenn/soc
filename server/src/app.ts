@@ -12,15 +12,42 @@ const options = {
 };
 const io = new Server(httpServer, options);
 
-io.on("connection", (socket) => {
-    console.log("Damn, someone is connected");
+const id = () => Math.floor(Math.random() * 1000000)
 
-    socket.emit("connected");
+const connections = {}
 
-    socket.on("disconnect", () => {
-        socket.emit("disconnected");
-        console.log("Socket is disconnected");
+io.of('/neutral').on("connection", (socket) => {
+    const _id = id()
+    connections[socket.id] = _id
+    const greeting = `You are connected to [NEUTRAL] as ${_id}`
+
+    // Greetings from server
+    socket.emit("greeting", greeting);
+
+    // request to join a room
+    socket.on("join", room => {
+        const joinGreeting = `ID ${_id} has join this room [BROADCAST]`
+        socket.join(room)
+        socket.emit('event', joinGreeting)
+        socket.to(room).emit('event', joinGreeting)
     });
+
+    // If socket is diconnected =
+    socket.on('disconnect', reason => {
+        delete connections[socket.id]
+    })
+});
+
+io.of('/slave').on("connection", (socket) => {
+    const greeting = "You are connected to [SLAVE]"
+
+    socket.emit("greeting", greeting);
+});
+
+io.of('/master').on("connection", (socket) => {
+    const greeting = "You are connected to [MASTER]"
+
+    socket.emit("greeting", greeting);
 });
 
 app.get("/", (req, res) => {
