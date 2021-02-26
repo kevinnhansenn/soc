@@ -1,11 +1,26 @@
 import React from "react";
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route
+} from "react-router-dom";
+
+import Student from "./page/Student";
+import Instructor from "./page/Instructor";
 
 function Entrypoint() {
     return (
         <div className="App">
-            <header className="App-header">
-                <h1>Template</h1>
-            </header>
+            <Router>
+                <Switch>
+                    <Route path='/instructor'>
+                        <Instructor />
+                    </Route>
+                    <Route path='/'>
+                        <Student />
+                    </Route>
+                </Switch>
+            </Router>
         </div>
     );
 }
