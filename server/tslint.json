@@ -1,9 +1,12 @@
 {
     "defaultSeverity": "error",
-    "extends": ["tslint:recommended"],
     "jsRules": {},
     "rules": {
         "no-console": false
     },
-    "rulesDirectory": []
+    "rulesDirectory": [],
+    "extends": [
+        "tslint:recommended",
+        "tslint-config-prettier"
+    ]
 }

@@ -1,16 +1,22 @@
-import '../style/student.scss'
+import React, { useState } from 'react'
+import StudentLayout from '../layout/StudentLayout'
+import Application from '../component/Application'
+import Portal from '../component/Portal'
 
 const Student = () => {
-    return <div className='vw-100 vh-100 student'>
-        <div className="d-flex justify-content-between p-3" style={{ height: '10vh' }}>
-            <div className='bg-info'>
-                This is title <i className='bi-volume-up'></i>
-            </div>
-            <div className="btn btn-outline-danger">
-                <i className='bi-volume-up'></i>
-            </div>
-        </div>
-    </div>
+    const [loggedIn, setLoggedIn] = useState(false)
+
+    const login = (status: boolean) => {
+        setLoggedIn(status)
+    }
+
+    return (
+        <StudentLayout title="Socket.io" loggedIn={loggedIn} login={login}>
+            {
+                loggedIn ? <Application /> : <Portal />
+            }
+        </StudentLayout>
+    )
 }
 
-export default Student;
+export default Student
