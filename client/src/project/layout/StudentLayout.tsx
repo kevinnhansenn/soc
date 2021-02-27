@@ -38,7 +38,7 @@ const StudentLayout: FunctionComponent<Props> = (prop) => (
                     </div>
                     <div className="font-weight-bold mt-2" style={{ fontSize: 40 }}>
                         <span className="text-success">0</span>
-                        <span> / 5</span>
+                        <span> / 0</span>
                     </div>
                 </div>
             )

@@ -1,7 +1,9 @@
 import React from 'react'
 
 const Instructor = () => {
-    return <h1>Instructor</h1>
+    return <div>
+        <h1>Instructor</h1>
+    </div>
 }
 
 export default Instructor
