@@ -21,6 +21,7 @@ module.exports = {
     ],
     rules: {
         indent: ['error', 4],
+        '@typescript-eslint/no-unused-vars': 'error',
         'no-use-before-define': 'off'
     }
 }
