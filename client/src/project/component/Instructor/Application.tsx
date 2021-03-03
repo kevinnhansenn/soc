@@ -4,12 +4,7 @@ import Pre from './Pre'
 import Post from './Post'
 import { STATUS } from '../../util/Enum'
 
-interface Prop {
-    login: (status: boolean) => void
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Application: FunctionComponent<Prop> = (prop) => {
+const Application: FunctionComponent = () => {
     const [state, setState] = useState<STATUS>(STATUS.WAITING)
 
     const changeStatus = (status: STATUS) => {

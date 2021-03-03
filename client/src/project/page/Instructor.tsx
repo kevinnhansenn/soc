@@ -1,28 +1,20 @@
 import React, { useState } from 'react'
 import Application from '../component/Instructor/Application'
 import Portal from '../component/Instructor/Portal'
-
-const height = window.innerHeight
-const width = window.innerWidth
+import InstructorLayout from '../layout/InstructorLayout'
 
 const Instructor = () => {
-    const [loggedIn, setLoggedIn] = useState(true)
+    const [loggedIn, setLoggedIn] = useState(false)
 
     const login = (status: boolean) => {
         setLoggedIn(status)
     }
 
-    const RenderView = () => {
-        if (loggedIn) {
-            return <Application login={login} />
-        } else {
-            return <Portal login={login} />
+    return <InstructorLayout title="Instructor" loggedIn={loggedIn} login={login}>
+        {
+            loggedIn ? <Application /> : <Portal />
         }
-    }
-
-    return <div style={{ width, height }}>
-        <RenderView />
-    </div>
+    </InstructorLayout>
 }
 
 export default Instructor
