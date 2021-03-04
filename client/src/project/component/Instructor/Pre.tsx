@@ -35,7 +35,11 @@ const Pre: FC<Prop> = () => {
         }
     ])
 
-    const handleChange = (e: any) => {
+    const handleChangeCheckbox = (e: any) => {
+        console.log(e)
+    }
+
+    const handleChangeInput = (e: any) => {
         console.log(e)
     }
 
@@ -48,37 +52,13 @@ const Pre: FC<Prop> = () => {
                 <FormControl as="textarea" aria-label="With textarea" rows={3} />
             </InputGroup>
             {
-                qbank.map(q => <InputGroup key={q.id} className='mb-2'>
+                qbank.map((q, i, a) => <InputGroup key={q.id} className='mb-2'>
                     <InputGroup.Prepend>
-                        <InputGroup.Checkbox name={q.id} checked={q.answer} onChange={handleChange} />
+                        <InputGroup.Checkbox disabled name={q.id} checked={q.answer} onChange={handleChangeCheckbox} />
                     </InputGroup.Prepend>
-                    <FormControl placeholder={q.placeholder} />
+                    <FormControl onChange={handleChangeInput} placeholder={q.placeholder} disabled={a[i - 1] ? a[i - 1].text === '' : false} />
                 </InputGroup>)
             }
-            {/* <InputGroup className='mb-2'> */}
-            {/*    <InputGroup.Prepend> */}
-            {/*        <InputGroup.Checkbox aria-label="Correct Answer" /> */}
-            {/*    </InputGroup.Prepend> */}
-            {/*    <FormControl placeholder='Required' aria-label="Answer Option" /> */}
-            {/* </InputGroup> */}
-            {/* <InputGroup className='mb-2'> */}
-            {/*    <InputGroup.Prepend> */}
-            {/*        <InputGroup.Checkbox aria-label="Correct Answer" /> */}
-            {/*    </InputGroup.Prepend> */}
-            {/*    <FormControl disabled placeholder='(Optional)' aria-label="Answer Option" /> */}
-            {/* </InputGroup> */}
-            {/* <InputGroup className='mb-2'> */}
-            {/*    <InputGroup.Prepend> */}
-            {/*        <InputGroup.Checkbox aria-label="Correct Answer" /> */}
-            {/*    </InputGroup.Prepend> */}
-            {/*    <FormControl disabled placeholder='(Optional)' aria-label="Answer Option" /> */}
-            {/* </InputGroup> */}
-            {/* <InputGroup className='mb-2'> */}
-            {/*    <InputGroup.Prepend> */}
-            {/*        <InputGroup.Checkbox aria-label="Correct Answer" /> */}
-            {/*    </InputGroup.Prepend> */}
-            {/*    <FormControl disabled placeholder='(Optional)' aria-label="Answer Option" /> */}
-            {/* </InputGroup> */}
         </div>
 
     </div>
