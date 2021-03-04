@@ -2,17 +2,20 @@ import React, { useState } from 'react'
 import Application from '../component/Instructor/Application'
 import Portal from '../component/Instructor/Portal'
 import InstructorLayout from '../layout/InstructorLayout'
+import { STATUS } from '../util/Enum'
 
 const Instructor = () => {
-    const [loggedIn, setLoggedIn] = useState(false)
+    const [status, setStatus] = useState(STATUS.NOTLOGGEDIN)
 
-    const login = (status: boolean) => {
-        setLoggedIn(status)
+    const changeStatus = (status: STATUS) => {
+        setStatus(status)
     }
 
-    return <InstructorLayout title="Instructor" loggedIn={loggedIn} login={login}>
+    const isLoggedIn = status !== STATUS.NOTLOGGEDIN
+
+    return <InstructorLayout title="Instructor" loggedIn={isLoggedIn} status={status} changeStatus={changeStatus}>
         {
-            loggedIn ? <Application /> : <Portal />
+            isLoggedIn ? <Application status={status} changeStatus={changeStatus}/> : <Portal/>
         }
     </InstructorLayout>
 }

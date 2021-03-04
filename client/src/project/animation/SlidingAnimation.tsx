@@ -3,6 +3,8 @@ import { CSSTransition, SwitchTransition } from 'react-transition-group'
 import styled from 'styled-components'
 
 const TransitionContainer = styled.div`
+  width: 100%;
+  
   .slide-enter {
     opacity: 0.01;
   }

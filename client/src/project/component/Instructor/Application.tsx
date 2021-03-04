@@ -1,21 +1,22 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { FC } from 'react'
 import Waiting from './Waiting'
 import Pre from './Pre'
 import Post from './Post'
 import { STATUS } from '../../util/Enum'
 
-const Application: FunctionComponent = () => {
-    const [state, setState] = useState<STATUS>(STATUS.WAITING)
+interface Prop {
+    status: STATUS,
+    changeStatus: (status: STATUS) => void
+}
 
-    const changeStatus = (status: STATUS) => {
-        setState(status)
-    }
+const Application: FC<Prop> = (prop) => {
+    const currentStatus = prop.status
 
-    if (state === STATUS.PRE) return <Pre changeStatus={changeStatus} />
+    if (currentStatus === STATUS.PRE) return <Pre changeStatus={prop.changeStatus} />
 
-    if (state === STATUS.POST) return <Post changeStatus={changeStatus} />
+    if (currentStatus === STATUS.POST) return <Post changeStatus={prop.changeStatus} />
 
-    return <Waiting changeStatus={changeStatus} />
+    return <Waiting />
 }
 
 export default Application

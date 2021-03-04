@@ -4,9 +4,9 @@ import { STATUS } from '../../util/Enum'
 interface Prop {
     changeStatus: (status: STATUS) => void
 }
-const Post: FC<Prop> = () => {
+const Post: FC<Prop> = (prop) => {
     return <div>
-        <h1>POST Room</h1>
+        <h1 onClick={() => prop.changeStatus(STATUS.PRE)}>POST Room</h1>
     </div>
 }
 

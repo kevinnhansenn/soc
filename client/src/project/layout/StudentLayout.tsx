@@ -11,7 +11,7 @@ interface Props {
 }
 
 const StudentLayout: FunctionComponent<Props> = (prop) => (
-    <div className="d-flex flex-column student" style={{ width, height }}>
+    <div className="d-flex flex-column" style={{ width, height }}>
         <div className="d-flex align-items-center justify-content-between px-3 py-2">
             <div
                 className="d-flex align-items-center font-weight-bold"
@@ -21,7 +21,7 @@ const StudentLayout: FunctionComponent<Props> = (prop) => (
             </div>
             <i className="bi bi-volume-up" style={{ fontSize: 38 }} />
         </div>
-        <div className="w-100 flex-grow-1 d-flex align-items-center justify-content-center">
+        <div className="w-100 flex-grow-1 flex-center">
             <SlidingAnimation cssKey={prop.loggedIn ? '1' : '0'}>
                 {prop.children}
             </SlidingAnimation>
