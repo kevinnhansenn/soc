@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import SlidingAnimation from '../animation/SlidingAnimation'
+import FadeAnimation from '../animation/FadeAnimation'
 import { STATUS } from '../util/Enum'
 
 const height = window.innerHeight
@@ -18,13 +18,13 @@ const InstructorLayout: FC<Props> = (prop) => {
             return <div className="d-flex align-items-center justify-content-between px-3 py-2">
                 <div>
                     <i
-                        className="bi bi-arrow-left-circle-fill"
-                        style={{ fontSize: 50 }}
+                        className="bi bi-box-arrow-left"
+                        style={{ fontSize: 48 }}
                         onClick={() => prop.changeStatus(STATUS.NOTLOGGEDIN)}
                     />
                 </div>
-                <div className="font-weight-bold mt-2" style={{ fontSize: 40 }}>
-                    <span className="text-info">0</span>
+                <div className="font-weight-bold" style={{ fontSize: 40 }}>
+                    <span>0</span>
                 </div>
                 <div>
                     <i
@@ -96,9 +96,9 @@ const InstructorLayout: FC<Props> = (prop) => {
             <i className="bi bi-volume-up" style={{ fontSize: 38 }} />
         </div>
         <div className={'w-100 overflow-auto flex-grow-1 d-flex'}>
-            <SlidingAnimation cssKey={prop.loggedIn ? '1' : '0'}>
+            <FadeAnimation cssKey={prop.loggedIn ? '1' : '0'}>
                 {prop.children}
-            </SlidingAnimation>
+            </FadeAnimation>
         </div>
         <RenderNavbar />
     </div>

@@ -3,6 +3,7 @@ import Waiting from './Waiting'
 import Pre from './Pre'
 import Post from './Post'
 import { STATUS } from '../../util/Enum'
+import FadeAnimation from '../../animation/FadeAnimation'
 
 interface Prop {
     status: STATUS,
@@ -12,11 +13,17 @@ interface Prop {
 const Application: FC<Prop> = (prop) => {
     const currentStatus = prop.status
 
-    if (currentStatus === STATUS.PRE) return <Pre changeStatus={prop.changeStatus} />
+    const RenderView = () => {
+        if (currentStatus === STATUS.PRE) return <Pre changeStatus={prop.changeStatus} />
 
-    if (currentStatus === STATUS.POST) return <Post changeStatus={prop.changeStatus} />
+        if (currentStatus === STATUS.POST) return <Post changeStatus={prop.changeStatus} />
 
-    return <Waiting />
+        return <Waiting />
+    }
+
+    return <FadeAnimation cssKey={currentStatus}>
+        <RenderView />
+    </FadeAnimation>
 }
 
 export default Application

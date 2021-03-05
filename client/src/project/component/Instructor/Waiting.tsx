@@ -4,7 +4,6 @@ import ListGroup from 'react-bootstrap/ListGroup'
 import Form from 'react-bootstrap/Form'
 
 const Waiting: FC = () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars
     const [mode, setMode] = useState('0')
 
     const modeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,7 +34,7 @@ const Waiting: FC = () => {
                             label="Multiple Choices"
                             name="mode"
                             value="0"
-                            defaultChecked
+                            checked={mode === '0'}
                             onChange={modeChange}
                         />
                         <Form.Check
@@ -43,6 +42,7 @@ const Waiting: FC = () => {
                             label="Survey / Voting"
                             name="mode"
                             value="1"
+                            checked={mode === '1'}
                             onChange={modeChange}
                         />
                     </Form.Group>

@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react'
-import SlidingAnimation from '../animation/SlidingAnimation'
+import FadeAnimation from '../animation/FadeAnimation'
 
 const height = window.innerHeight
 const width = window.innerWidth
@@ -22,9 +22,9 @@ const StudentLayout: FunctionComponent<Props> = (prop) => (
             <i className="bi bi-volume-up" style={{ fontSize: 38 }} />
         </div>
         <div className="w-100 flex-grow-1 flex-center">
-            <SlidingAnimation cssKey={prop.loggedIn ? '1' : '0'}>
+            <FadeAnimation cssKey={prop.loggedIn ? '1' : '0'}>
                 {prop.children}
-            </SlidingAnimation>
+            </FadeAnimation>
         </div>
         {prop.loggedIn
             ? (

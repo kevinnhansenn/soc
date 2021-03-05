@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import React, { ChangeEvent, FC, useState } from 'react'
 import { STATUS } from '../../util/Enum'
 import InputGroup from 'react-bootstrap/InputGroup'
 import FormControl from 'react-bootstrap/FormControl'
@@ -7,7 +7,6 @@ interface Prop {
     changeStatus: (status: STATUS) => void
 }
 const Pre: FC<Prop> = () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars
     const [qbank, setQbank] = useState([
         {
             id: 1,
@@ -36,11 +35,27 @@ const Pre: FC<Prop> = () => {
     ])
 
     const handleChangeCheckbox = (e: any) => {
-        console.log(e)
+        const editedFormId = e.target.name
+        const cloneQbank = [...qbank]
+        cloneQbank.map(q => {
+            if (q.id === parseInt(editedFormId)) {
+                q.answer = !q.answer
+            }
+            return q
+        })
+        setQbank(cloneQbank)
     }
 
-    const handleChangeInput = (e: any) => {
-        console.log(e)
+    const handleChangeInput = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+        const editedFormId = e.target.name
+        const cloneQbank = [...qbank]
+        cloneQbank.map(q => {
+            if (q.id === parseInt(editedFormId)) {
+                q.text = e.target.value
+            }
+            return q
+        })
+        setQbank(cloneQbank)
     }
 
     return <div className='h-100 flex-center'>
@@ -54,9 +69,17 @@ const Pre: FC<Prop> = () => {
             {
                 qbank.map((q, i, a) => <InputGroup key={q.id} className='mb-2'>
                     <InputGroup.Prepend>
-                        <InputGroup.Checkbox disabled name={q.id} checked={q.answer} onChange={handleChangeCheckbox} />
+                        <InputGroup.Checkbox
+                            disabled={a[i - 1] ? a[i - 1].text === '' : false}
+                            name={q.id}
+                            checked={q.answer}
+                            onChange={handleChangeCheckbox} />
                     </InputGroup.Prepend>
-                    <FormControl onChange={handleChangeInput} placeholder={q.placeholder} disabled={a[i - 1] ? a[i - 1].text === '' : false} />
+                    <FormControl
+                        onChange={handleChangeInput}
+                        name={q.id.toString()}
+                        placeholder={q.placeholder}
+                        disabled={a[i - 1] ? a[i - 1].text === '' : false} />
                 </InputGroup>)
             }
         </div>
