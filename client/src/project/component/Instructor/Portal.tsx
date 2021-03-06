@@ -14,7 +14,7 @@ const Portal: FC = () => {
             Passcode
         </div>
         <InputGroup size="lg">
-            <FormControl aria-label="Large" type={'password'}/>
+            <FormControl aria-label="Large" type={'password'} />
         </InputGroup>
     </div>
 }

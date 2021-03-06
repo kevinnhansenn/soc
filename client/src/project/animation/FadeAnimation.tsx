@@ -1,7 +1,7 @@
 import React, { FC } from 'react'
 import { CSSTransition, SwitchTransition } from 'react-transition-group'
 import styled from 'styled-components'
-import { STATUS } from '../util/Enum'
+import { STATUS_INSTRUCTOR, STATUS_STUDENT } from '../util/Enum'
 
 const TransitionContainer = styled.div`
   width: 100%;
@@ -13,6 +13,10 @@ const TransitionContainer = styled.div`
 
   .fade-enter-active {
     opacity: 1;
+  }
+
+  .fade-enter-done {
+    height: 100%;
   }
 
   .fade-exit {
@@ -29,9 +33,15 @@ const TransitionContainer = styled.div`
 `
 
 interface Prop {
-    cssKey: string | STATUS
+    cssKey: string | STATUS_STUDENT | STATUS_INSTRUCTOR
 }
 const FadeAnimation:FC<Prop> = (prop) => {
+    if (prop.cssKey === STATUS_STUDENT.ANSWERED) {
+        return <TransitionContainer>
+            { prop.children }
+        </TransitionContainer>
+    }
+
     return (
         <TransitionContainer>
             <SwitchTransition>

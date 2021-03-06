@@ -1,22 +1,22 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { FC } from 'react'
 import Questionnaire from './Questionnaire'
 import ReactLoading from 'react-loading'
+import { STATUS_STUDENT } from '../../util/Enum'
 
-const Application: FunctionComponent = () => {
-    const [ready, setReady] = useState(false)
+interface Prop {
+    status: STATUS_STUDENT,
+    changeStatus: (status: STATUS_STUDENT) => void
+}
 
-    const changeReady = (status: boolean) => {
-        setReady(status)
-    }
-
+const Application: FC<Prop> = (prop) => {
     return (
-        <div>
-            {ready
+        <div className='h-100'>
+            { prop.status === STATUS_STUDENT.READY || prop.status === STATUS_STUDENT.ANSWERED
                 ? (
-                    <Questionnaire changeReady={changeReady} />
+                    <Questionnaire changeStatus={prop.changeStatus} />
                 )
                 : (
-                    <div className="d-flex flex-column align-items-center">
+                    <div className="flex-center flex-column h-100">
                         <ReactLoading
                             type={'bars'}
                             height={60}
@@ -25,7 +25,7 @@ const Application: FunctionComponent = () => {
                         />
                         <div
                             className="font-weight-bold mt-4"
-                            onClick={() => changeReady(true)}
+                            onClick={() => prop.changeStatus(STATUS_STUDENT.READY)}
                         >
                         Waiting for Instructor...
                         </div>

@@ -1,10 +1,10 @@
 import React, { ChangeEvent, FC, useState } from 'react'
-import { STATUS } from '../../util/Enum'
+import { STATUS_INSTRUCTOR } from '../../util/Enum'
 import InputGroup from 'react-bootstrap/InputGroup'
 import FormControl from 'react-bootstrap/FormControl'
 
 interface Prop {
-    changeStatus: (status: STATUS) => void
+    changeStatus: (status: STATUS_INSTRUCTOR) => void
 }
 const Pre: FC<Prop> = () => {
     const [qbank, setQbank] = useState([

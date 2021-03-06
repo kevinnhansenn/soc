@@ -1,17 +1,76 @@
-import React, { FunctionComponent } from 'react'
+import React, { FC, useState } from 'react'
 import FadeAnimation from '../animation/FadeAnimation'
+import { STATUS_STUDENT } from '../util/Enum'
 
 const height = window.innerHeight
 const width = window.innerWidth
 
 interface Props {
-  title: string
-  loggedIn: boolean
-  login: (status: boolean) => void
+    title: string
+    status: STATUS_STUDENT
+    changeStatus: (status: STATUS_STUDENT) => void
 }
 
-const StudentLayout: FunctionComponent<Props> = (prop) => (
-    <div className="d-flex flex-column" style={{ width, height }}>
+const StudentLayout: FC<Props> = (prop) => {
+    const [sound, setSound] = useState(false)
+
+    const RenderNavbar = () => {
+        if (prop.status === STATUS_STUDENT.WAITING) {
+            return <div className="d-flex align-items-center justify-content-between px-3 py-2">
+                <div>
+                    <i
+                        className="bi bi-arrow-left-circle-fill"
+                        style={{ fontSize: 50 }}
+                        onClick={() => prop.changeStatus(STATUS_STUDENT.NOTLOGGEDIN)}
+                    />
+                </div>
+                <div className="font-weight-bold mt-2" style={{ fontSize: 40 }}>
+                    <span className="text-success">0</span>
+                    <span> / 0</span>
+                </div>
+            </div>
+        }
+
+        if (prop.status === STATUS_STUDENT.READY) {
+            return <div className="d-flex align-items-center justify-content-between px-3 py-2">
+                <div
+                    className='text-warning font-weight-bold'
+                    style={{ fontSize: 30 }}
+                >Not Answered</div>
+                <div className="font-weight-bold mt-2" style={{ fontSize: 40 }}>
+                    <span className="text-success">0</span>
+                    <span> / 0</span>
+                </div>
+            </div>
+        }
+
+        if (prop.status === STATUS_STUDENT.ANSWERED) {
+            return <div className="d-flex align-items-center justify-content-between px-3 py-2">
+                <div
+                    onClick={() => prop.changeStatus(STATUS_STUDENT.WAITING)}
+                    className='text-success font-weight-bold'
+                    style={{ fontSize: 30 }}
+                > Confirmed
+                </div>
+                <div className="font-weight-bold mt-2" style={{ fontSize: 40 }}>
+                    <span className="text-success">0</span>
+                    <span> / 0</span>
+                </div>
+            </div>
+        }
+
+        return <div className="d-flex align-items-center justify-content-end px-3 py-2">
+            <div className="font-weight-bold mt-2" style={{ fontSize: 40 }}>
+                <i
+                    className="bi bi-arrow-right-circle-fill"
+                    style={{ fontSize: 50 }}
+                    onClick={() => prop.changeStatus(STATUS_STUDENT.WAITING)}
+                />
+            </div>
+        </div>
+    }
+
+    return <div className="d-flex flex-column" style={{ width, height }}>
         <div className="d-flex align-items-center justify-content-between px-3 py-2">
             <div
                 className="d-flex align-items-center font-weight-bold"
@@ -19,41 +78,19 @@ const StudentLayout: FunctionComponent<Props> = (prop) => (
             >
                 {prop.title}
             </div>
-            <i className="bi bi-volume-up" style={{ fontSize: 38 }} />
+            {
+                sound
+                    ? <i className="bi bi-volume-up" onClick={() => setSound(!sound)} style={{ fontSize: 38 }} />
+                    : <i className="bi bi-volume-mute" onClick={() => setSound(!sound)} style={{ fontSize: 38 }} />
+            }
         </div>
         <div className="w-100 flex-grow-1 flex-center">
-            <FadeAnimation cssKey={prop.loggedIn ? '1' : '0'}>
+            <FadeAnimation cssKey={prop.status}>
                 {prop.children}
             </FadeAnimation>
         </div>
-        {prop.loggedIn
-            ? (
-                <div className="d-flex align-items-center justify-content-between px-3 py-2">
-                    <div>
-                        <i
-                            className="bi bi-arrow-left-circle-fill"
-                            style={{ fontSize: 50 }}
-                            onClick={() => prop.login(false)}
-                        />
-                    </div>
-                    <div className="font-weight-bold mt-2" style={{ fontSize: 40 }}>
-                        <span className="text-success">0</span>
-                        <span> / 0</span>
-                    </div>
-                </div>
-            )
-            : (
-                <div className="d-flex align-items-center justify-content-end px-3 py-2">
-                    <div className="font-weight-bold mt-2" style={{ fontSize: 40 }}>
-                        <i
-                            className="bi bi-arrow-right-circle-fill"
-                            style={{ fontSize: 50 }}
-                            onClick={() => prop.login(true)}
-                        />
-                    </div>
-                </div>
-            )}
+        <RenderNavbar />
     </div>
-)
+}
 
 export default StudentLayout

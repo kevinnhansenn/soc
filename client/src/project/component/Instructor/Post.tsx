@@ -1,11 +1,11 @@
 import React, { FC } from 'react'
 import Card from 'react-bootstrap/Card'
 import ListGroup from 'react-bootstrap/ListGroup'
-import { STATUS } from '../../util/Enum'
+import { STATUS_INSTRUCTOR } from '../../util/Enum'
 import { ProgressBar } from 'react-bootstrap'
 
 interface Prop {
-    changeStatus: (status: STATUS) => void
+    changeStatus: (status: STATUS_INSTRUCTOR) => void
 }
 
 const Post: FC<Prop> = () => {
@@ -32,9 +32,9 @@ const Post: FC<Prop> = () => {
             </Card>
             <Card className='overflow-auto' style={{ width: '48%' }}>
                 {
-                    Array.from(Array(4), (e) => <Card.Body key={e} className={'pt-3 pb-0 text-left'}>
+                    Array.from(Array(4), (e, i) => <Card.Body key={i} className={'pt-3 pb-0 text-left'}>
                         <div style={{ fontSize: 16 }} className='font-weight-bold mb-2 separator'>Answer 1</div>
-                        <div className="dropdown-divider"></div>
+                        <div className="dropdown-divider" />
                         <div style={{ fontSize: 12 }} className='bold mb-2 separator'>3 Students answered this.</div>
                         <ProgressBar variant='success' now={now} label={`${now}%`} />
                     </Card.Body>)

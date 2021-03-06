@@ -1,6 +1,6 @@
-import React, { FC } from 'react'
+import React, { FC, useState } from 'react'
 import FadeAnimation from '../animation/FadeAnimation'
-import { STATUS } from '../util/Enum'
+import { STATUS_INSTRUCTOR } from '../util/Enum'
 
 const height = window.innerHeight
 const width = window.innerWidth
@@ -8,19 +8,20 @@ const width = window.innerWidth
 interface Props {
     title: string
     loggedIn: boolean
-    status: STATUS
-    changeStatus: (status: STATUS) => void
+    status: STATUS_INSTRUCTOR
+    changeStatus: (status: STATUS_INSTRUCTOR) => void
 }
 
 const InstructorLayout: FC<Props> = (prop) => {
+    const [sound, setSound] = useState(false)
     const RenderNavbar = () => {
-        if (prop.status === STATUS.WAITING) {
+        if (prop.status === STATUS_INSTRUCTOR.WAITING) {
             return <div className="d-flex align-items-center justify-content-between px-3 py-2">
                 <div>
                     <i
                         className="bi bi-box-arrow-left"
                         style={{ fontSize: 48 }}
-                        onClick={() => prop.changeStatus(STATUS.NOTLOGGEDIN)}
+                        onClick={() => prop.changeStatus(STATUS_INSTRUCTOR.NOTLOGGEDIN)}
                     />
                 </div>
                 <div className="font-weight-bold" style={{ fontSize: 40 }}>
@@ -30,45 +31,45 @@ const InstructorLayout: FC<Props> = (prop) => {
                     <i
                         className="bi bi-box-arrow-in-right"
                         style={{ fontSize: 50 }}
-                        onClick={() => prop.changeStatus(STATUS.PRE)}
+                        onClick={() => prop.changeStatus(STATUS_INSTRUCTOR.PRE)}
                     />
                 </div>
             </div>
         }
 
-        if (prop.status === STATUS.PRE) {
+        if (prop.status === STATUS_INSTRUCTOR.PRE) {
             return <div className="d-flex align-items-center justify-content-between px-3 py-2">
                 <div>
                     <i
                         className="bi bi-arrow-left-circle-fill"
                         style={{ fontSize: 50 }}
-                        onClick={() => prop.changeStatus(STATUS.WAITING)}
+                        onClick={() => prop.changeStatus(STATUS_INSTRUCTOR.WAITING)}
                     />
                 </div>
                 <div>
                     <i
                         className="bi bi-check-circle"
                         style={{ fontSize: 50 }}
-                        onClick={() => prop.changeStatus(STATUS.POST)}
+                        onClick={() => prop.changeStatus(STATUS_INSTRUCTOR.POST)}
                     />
                 </div>
             </div>
         }
 
-        if (prop.status === STATUS.POST) {
+        if (prop.status === STATUS_INSTRUCTOR.POST) {
             return <div className="d-flex align-items-center justify-content-between px-3 py-2">
                 <div>
                     <i
                         className="bi bi-arrow-left-circle-fill"
                         style={{ fontSize: 50 }}
-                        onClick={() => prop.changeStatus(STATUS.PRE)}
+                        onClick={() => prop.changeStatus(STATUS_INSTRUCTOR.PRE)}
                     />
                 </div>
                 <div>
                     <i
                         className="bi bi-check-circle"
                         style={{ fontSize: 50 }}
-                        onClick={() => prop.changeStatus(STATUS.PRE)}
+                        onClick={() => prop.changeStatus(STATUS_INSTRUCTOR.PRE)}
                     />
                 </div>
             </div>
@@ -79,7 +80,7 @@ const InstructorLayout: FC<Props> = (prop) => {
                 <i
                     className="bi bi-arrow-right-circle-fill"
                     style={{ fontSize: 50 }}
-                    onClick={() => prop.changeStatus(STATUS.WAITING)}
+                    onClick={() => prop.changeStatus(STATUS_INSTRUCTOR.WAITING)}
                 />
             </div>
         </div>
@@ -93,7 +94,11 @@ const InstructorLayout: FC<Props> = (prop) => {
             >
                 {prop.title}
             </div>
-            <i className="bi bi-volume-up" style={{ fontSize: 38 }} />
+            {
+                sound
+                    ? <i className="bi bi-volume-up" onClick={() => setSound(!sound)} style={{ fontSize: 38 }} />
+                    : <i className="bi bi-volume-mute" onClick={() => setSound(!sound)} style={{ fontSize: 38 }} />
+            }
         </div>
         <div className={'w-100 overflow-auto flex-grow-1 d-flex'}>
             <FadeAnimation cssKey={prop.loggedIn ? '1' : '0'}>
