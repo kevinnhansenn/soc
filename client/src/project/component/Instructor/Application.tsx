@@ -1,26 +1,29 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { FC } from 'react'
 import Waiting from './Waiting'
 import Pre from './Pre'
 import Post from './Post'
 import { STATUS } from '../../util/Enum'
+import FadeAnimation from '../../animation/FadeAnimation'
 
 interface Prop {
-    login: (status: boolean) => void
+    status: STATUS,
+    changeStatus: (status: STATUS) => void
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Application: FunctionComponent<Prop> = (prop) => {
-    const [state, setState] = useState<STATUS>(STATUS.WAITING)
+const Application: FC<Prop> = (prop) => {
+    const currentStatus = prop.status
 
-    const changeStatus = (status: STATUS) => {
-        setState(status)
+    const RenderView = () => {
+        if (currentStatus === STATUS.PRE) return <Pre changeStatus={prop.changeStatus} />
+
+        if (currentStatus === STATUS.POST) return <Post changeStatus={prop.changeStatus} />
+
+        return <Waiting />
     }
 
-    if (state === STATUS.PRE) return <Pre changeStatus={changeStatus} />
-
-    if (state === STATUS.POST) return <Post changeStatus={changeStatus} />
-
-    return <Waiting changeStatus={changeStatus} />
+    return <FadeAnimation cssKey={currentStatus}>
+        <RenderView />
+    </FadeAnimation>
 }
 
 export default Application

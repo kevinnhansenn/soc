@@ -11,8 +11,10 @@ const Student = () => {
     }
 
     return (
-        <StudentLayout title="Socket.io" loggedIn={loggedIn} login={login}>
-            {loggedIn ? <Application /> : <Portal login={login} />}
+        <StudentLayout title="Student" loggedIn={loggedIn} login={login}>
+            {
+                loggedIn ? <Application /> : <Portal />
+            }
         </StudentLayout>
     )
 }

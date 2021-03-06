@@ -1,5 +1,6 @@
-import React, { FunctionComponent } from 'react'
-import SlidingAnimation from '../animation/SlidingAnimation'
+import React, { FC } from 'react'
+import FadeAnimation from '../animation/FadeAnimation'
+import { STATUS } from '../util/Enum'
 
 const height = window.innerHeight
 const width = window.innerWidth
@@ -7,11 +8,84 @@ const width = window.innerWidth
 interface Props {
     title: string
     loggedIn: boolean
-    login: (status: boolean) => void
+    status: STATUS
+    changeStatus: (status: STATUS) => void
 }
 
-const StudentLayout: FunctionComponent<Props> = (prop) => (
-    <div className="d-flex flex-column student" style={{ width, height }}>
+const InstructorLayout: FC<Props> = (prop) => {
+    const RenderNavbar = () => {
+        if (prop.status === STATUS.WAITING) {
+            return <div className="d-flex align-items-center justify-content-between px-3 py-2">
+                <div>
+                    <i
+                        className="bi bi-box-arrow-left"
+                        style={{ fontSize: 48 }}
+                        onClick={() => prop.changeStatus(STATUS.NOTLOGGEDIN)}
+                    />
+                </div>
+                <div className="font-weight-bold" style={{ fontSize: 40 }}>
+                    <span>0</span>
+                </div>
+                <div>
+                    <i
+                        className="bi bi-box-arrow-in-right"
+                        style={{ fontSize: 50 }}
+                        onClick={() => prop.changeStatus(STATUS.PRE)}
+                    />
+                </div>
+            </div>
+        }
+
+        if (prop.status === STATUS.PRE) {
+            return <div className="d-flex align-items-center justify-content-between px-3 py-2">
+                <div>
+                    <i
+                        className="bi bi-arrow-left-circle-fill"
+                        style={{ fontSize: 50 }}
+                        onClick={() => prop.changeStatus(STATUS.WAITING)}
+                    />
+                </div>
+                <div>
+                    <i
+                        className="bi bi-check-circle"
+                        style={{ fontSize: 50 }}
+                        onClick={() => prop.changeStatus(STATUS.POST)}
+                    />
+                </div>
+            </div>
+        }
+
+        if (prop.status === STATUS.POST) {
+            return <div className="d-flex align-items-center justify-content-between px-3 py-2">
+                <div>
+                    <i
+                        className="bi bi-arrow-left-circle-fill"
+                        style={{ fontSize: 50 }}
+                        onClick={() => prop.changeStatus(STATUS.PRE)}
+                    />
+                </div>
+                <div>
+                    <i
+                        className="bi bi-check-circle"
+                        style={{ fontSize: 50 }}
+                        onClick={() => prop.changeStatus(STATUS.PRE)}
+                    />
+                </div>
+            </div>
+        }
+
+        return <div className="d-flex align-items-center justify-content-end px-3 py-2">
+            <div className="font-weight-bold mt-2" style={{ fontSize: 40 }}>
+                <i
+                    className="bi bi-arrow-right-circle-fill"
+                    style={{ fontSize: 50 }}
+                    onClick={() => prop.changeStatus(STATUS.WAITING)}
+                />
+            </div>
+        </div>
+    }
+
+    return <div className="d-flex flex-column" style={{ width, height }}>
         <div className="d-flex align-items-center justify-content-between px-3 py-2">
             <div
                 className="d-flex align-items-center font-weight-bold"
@@ -21,39 +95,13 @@ const StudentLayout: FunctionComponent<Props> = (prop) => (
             </div>
             <i className="bi bi-volume-up" style={{ fontSize: 38 }} />
         </div>
-        <div className="w-100 flex-grow-1 d-flex align-items-center justify-content-center">
-            <SlidingAnimation cssKey={prop.loggedIn ? '1' : '0'}>
+        <div className={'w-100 overflow-auto flex-grow-1 d-flex'}>
+            <FadeAnimation cssKey={prop.loggedIn ? '1' : '0'}>
                 {prop.children}
-            </SlidingAnimation>
+            </FadeAnimation>
         </div>
-        {prop.loggedIn
-            ? (
-                <div className="d-flex align-items-center justify-content-between px-3 py-2">
-                    <div>
-                        <i
-                            className="bi bi-arrow-left-circle-fill"
-                            style={{ fontSize: 50 }}
-                            onClick={() => prop.login(false)}
-                        />
-                    </div>
-                    <div className="font-weight-bold mt-2" style={{ fontSize: 40 }}>
-                        <span className="text-success">0</span>
-                        <span> / 0</span>
-                    </div>
-                </div>
-            )
-            : (
-                <div className="d-flex align-items-center justify-content-end px-3 py-2">
-                    <div className="font-weight-bold mt-2" style={{ fontSize: 40 }}>
-                        <i
-                            className="bi bi-arrow-right-circle-fill"
-                            style={{ fontSize: 50 }}
-                            onClick={() => prop.login(true)}
-                        />
-                    </div>
-                </div>
-            )}
+        <RenderNavbar />
     </div>
-)
+}
 
-export default StudentLayout
+export default InstructorLayout
