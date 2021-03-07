@@ -1,6 +1,10 @@
 import React, { FC, useState } from 'react'
 import FadeAnimation from '../animation/FadeAnimation'
 import { STATUS_INSTRUCTOR } from '../util/Enum'
+import axios from 'axios'
+import { useAppSelector } from '../redux/hooks'
+
+axios.defaults.baseURL = 'http://localhost:3001'
 
 const height = window.innerHeight
 const width = window.innerWidth
@@ -14,6 +18,15 @@ interface Props {
 
 const InstructorLayout: FC<Props> = (prop) => {
     const [sound, setSound] = useState(false)
+
+    const account = useAppSelector(state => state.instructor.account)
+    console.log(account)
+
+    const instructorLogin = async () => {
+        // const res = await axios.post('instructorLogin', { username: 'Kevin', password: 'Hansen' })
+        prop.changeStatus(STATUS_INSTRUCTOR.WAITING)
+    }
+
     const RenderNavbar = () => {
         if (prop.status === STATUS_INSTRUCTOR.WAITING) {
             return <div className="d-flex align-items-center justify-content-between px-3 py-2">
@@ -80,7 +93,7 @@ const InstructorLayout: FC<Props> = (prop) => {
                 <i
                     className="bi bi-arrow-right-circle-fill"
                     style={{ fontSize: 50 }}
-                    onClick={() => prop.changeStatus(STATUS_INSTRUCTOR.WAITING)}
+                    onClick={instructorLogin}
                 />
             </div>
         </div>

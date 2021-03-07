@@ -21,11 +21,15 @@ const Post: FC<Prop> = () => {
                     <ListGroup variant='flush'>
                         <ListGroup.Item className='border border-success text-success'>Completed</ListGroup.Item>
                         {
-                            Array.from(Array(2), (e, i) => <ListGroup.Item className='p-1' key={i}>Student A</ListGroup.Item>)
+                            Array.from(
+                                Array(2), (e, i) => <ListGroup.Item className='p-1' key={i}>Student A</ListGroup.Item>
+                            )
                         }
                         <ListGroup.Item className="border border-warning text-warning">Answering...</ListGroup.Item>
                         {
-                            Array.from(Array(8), (e, i) => <ListGroup.Item className='p-1' key={i}>Student b</ListGroup.Item>)
+                            Array.from(
+                                Array(8), (e, i) => <ListGroup.Item className='p-1' key={i}>Student b</ListGroup.Item>
+                            )
                         }
                     </ListGroup>
                 </Card.Body>

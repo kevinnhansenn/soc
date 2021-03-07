@@ -1,8 +1,14 @@
 import express from 'express'
 import http from 'http'
 import { Server } from 'socket.io'
+import bodyParser from 'body-parser'
+import cors from 'cors'
 
 const app = express()
+
+app.use(bodyParser.json())
+app.use(cors())
+
 const port = 3001
 const httpServer = http.createServer(app)
 const options = {
@@ -61,6 +67,14 @@ io.of('/instructor').on('connection', (socket) => {
 
 app.get('/', (req, res) => {
     res.send('GET REQUEST to backend server should not be allowed')
+})
+
+app.post('/instructorLogin', (req, res) => {
+    const room = Math.floor(Math.random() * 100000)
+    const { username, password } = req.body
+    if (!username || !password) return res.status(400).send('Invalid Credentials')
+
+    res.status(200).send({ room })
 })
 
 httpServer.listen(port, () => {
