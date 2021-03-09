@@ -1,10 +1,10 @@
-import React, {useEffect, useState} from "react";
-import "./App.scss";
-import Button from "react-bootstrap/Button";
-import ButtonGroup from "react-bootstrap/ButtonGroup";
-import {Manager} from "socket.io-client";
-import Nav from "react-bootstrap/esm/Nav";
-import {Dropdown, DropdownButton, FormControl, InputGroup} from "react-bootstrap";
+import React, { useEffect, useState } from 'react'
+import './App.scss'
+import Button from 'react-bootstrap/Button'
+import ButtonGroup from 'react-bootstrap/ButtonGroup'
+import { Manager } from 'socket.io-client'
+import Nav from 'react-bootstrap/esm/Nav'
+import { Dropdown, DropdownButton, FormControl, InputGroup } from 'react-bootstrap'
 
 enum MODE {
     NEUTRAL = '/neutral',
@@ -19,50 +19,50 @@ enum STATUS {
 
 const defaultMessage = 'You are not connected :('
 
-const socketManager = new Manager("http://localhost:3001", {
+const socketManager = new Manager('http://localhost:3001', {
     autoConnect: false
-});
+})
 
-function App() {
-    const [status, setStatus] = useState(STATUS.CLOSE);
+function App () {
+    const [status, setStatus] = useState(STATUS.CLOSE)
     const [mode, setMode] = useState(MODE.NEUTRAL)
-    const [events, setEvents] = useState<string[]>([]);
+    const [events, setEvents] = useState<string[]>([])
     const [socket, setSocket] = useState<SocketIOClient.Socket>()
     const [message, setMessage] = useState(defaultMessage)
     const [respond, setRespond] = useState('')
 
     useEffect(() => {
 
-    }, []);
+    }, [])
 
     useEffect(() => {
         const _socket = socketManager.socket(mode)
-        _socket.on("connect", () => {
-            setStatus(STATUS.OPEN);
-        });
-        _socket.on("disconnect", () => {
+        _socket.on('connect', () => {
+            setStatus(STATUS.OPEN)
+        })
+        _socket.on('disconnect', () => {
             setMessage(defaultMessage)
-            setStatus(STATUS.CLOSE);
-        });
-        _socket.on("greeting", (msg: string) => {
+            setStatus(STATUS.CLOSE)
+        })
+        _socket.on('greeting', (msg: string) => {
             setMessage(msg)
-        });
+        })
         setSocket(_socket)
     }, [mode])
 
     useEffect(() => {
-        socket?.on("event", (msg: string) => {
+        socket?.on('event', (msg: string) => {
             setEvents([...events, msg])
-        });
+        })
     }, [events, socket])
 
     const connect = () => {
-        socket?.open();
-    };
+        socket?.open()
+    }
 
     const disconnect = () => {
-        socket?.close();
-    };
+        socket?.close()
+    }
 
     const changeMode = (eventKey: any) => {
         setMode(eventKey)
@@ -75,7 +75,7 @@ function App() {
     const FormInput = () => {
         return <div
             className="position-absolute"
-            style={{right: 20, top: 20}}
+            style={{ right: 20, top: 20 }}
         >
             <InputGroup className="mb-3">
                 <FormControl
@@ -91,7 +91,7 @@ function App() {
     const Navigation = () => {
         return <div
             className="position-absolute"
-            style={{left: 20, bottom: 20, zoom: 0.75}}
+            style={{ left: 20, bottom: 20, zoom: 0.75 }}
         >
             <Nav variant="pills" onSelect={changeMode} activeKey={mode}>
                 <Nav.Item>
@@ -110,7 +110,7 @@ function App() {
     const FormAction = () => {
         return <div
             className="position-absolute"
-            style={{left: 20, top: 20}}
+            style={{ left: 20, top: 20 }}
         >
             <ButtonGroup>
                 <Button variant="success" onClick={connect} disabled={status === STATUS.OPEN}>
@@ -128,7 +128,7 @@ function App() {
     }
 
     const Events = () => {
-        return <div className="position-absolute" style={{right: 20, bottom: 20}}>
+        return <div className="position-absolute" style={{ right: 20, bottom: 20 }}>
             {events.map((event, index) => (
                 <div className="my-2" style={{ fontSize: '16px' }} key={index}>
                     {event}
@@ -141,7 +141,7 @@ function App() {
         return <div className='d-flex flex-column align-items-center'>
             <span
                 className={`circle shadow ${
-                    status ? "bg-success" : "bg-danger"
+                    status ? 'bg-success' : 'bg-danger'
                 }`}
             />
             <small className="mt-3 text-muted">
@@ -160,7 +160,7 @@ function App() {
                 <Info />
             </header>
         </div>
-    );
+    )
 }
 
-export default App;
+export default App

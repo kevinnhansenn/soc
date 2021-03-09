@@ -78,6 +78,7 @@ studentIO.on('connection', (socket) => {
 })
 
 instructorIO.on('connection', (socket) => {
+    console.log('Connection Established Yay')
     // CREATE_ROOM
     const { username, room } = socket.handshake.query
     socket.join(room)

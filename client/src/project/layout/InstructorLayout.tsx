@@ -2,7 +2,8 @@ import React, { FC, useState } from 'react'
 import FadeAnimation from '../animation/FadeAnimation'
 import { STATUS_INSTRUCTOR } from '../util/Enum'
 import axios from 'axios'
-import { useAppSelector } from '../redux/hooks'
+import { useAppSelector, useAppDispatch } from '../redux/hooks'
+import { updateRoom, updateSocket } from '../redux/slice/instructor'
 
 axios.defaults.baseURL = 'http://localhost:3001'
 
@@ -18,13 +19,19 @@ interface Props {
 
 const InstructorLayout: FC<Props> = (prop) => {
     const [sound, setSound] = useState(false)
-
     const account = useAppSelector(state => state.instructor.account)
-    console.log(account)
+
+    const dispatch = useAppDispatch()
 
     const instructorLogin = async () => {
-        // const res = await axios.post('instructorLogin', { username: 'Kevin', password: 'Hansen' })
-        prop.changeStatus(STATUS_INSTRUCTOR.WAITING)
+        const res = await axios.post('instructorLogin', account)
+        if (res.status === 200) {
+            dispatch(updateRoom(res.data.room))
+            dispatch(updateSocket(true))
+            prop.changeStatus(STATUS_INSTRUCTOR.WAITING)
+        } else {
+            // Show error message
+        }
     }
 
     const RenderNavbar = () => {
