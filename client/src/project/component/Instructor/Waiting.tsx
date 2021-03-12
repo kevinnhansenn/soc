@@ -7,6 +7,7 @@ import { useAppSelector } from '../../redux/hooks'
 const Waiting: FC = () => {
     const [mode, setMode] = useState('0')
     const roomNumber = useAppSelector(state => state.instructor.room)
+    const participants = useAppSelector(state => state.instructor.participants)
 
     const modeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setMode(event.target.value)
@@ -21,7 +22,7 @@ const Waiting: FC = () => {
                 <Card.Body className={'p-0 overflow-auto'}>
                     <ListGroup variant='flush'>
                         {
-                            Array.from(Array(20), (e, i) => <ListGroup.Item key={i}>Student A</ListGroup.Item>)
+                            participants.map((participant, i) => <ListGroup.Item key={i}>{ participant }</ListGroup.Item>)
                         }
                     </ListGroup>
                 </Card.Body>

@@ -45,10 +45,17 @@ const genId = () => Math.floor(Math.random() * 100000).toString()
 const activeRooms: Room[] = []
 
 studentIO.on('connection', (socket) => {
-    const { username, room } = socket.handshake.query
+    const creds = socket.handshake.query
+
+    const room = creds.room
+    const username = creds.username
+
     const roomFound = activeRooms.filter(activeRoom => activeRoom.id === room)
     if (!roomFound.length) return socket.disconnect()
     socket.join(room)
+
+    console.log({ room })
+    instructorIO.to(room).emit('STUDENT_JOIN', username)
 
     // Add student to the room
     const _room:Room = roomFound[0]
@@ -78,7 +85,6 @@ studentIO.on('connection', (socket) => {
 })
 
 instructorIO.on('connection', (socket) => {
-    console.log('Connection Established Yay')
     // CREATE_ROOM
     const { username, room } = socket.handshake.query
     socket.join(room)
@@ -93,6 +99,7 @@ instructorIO.on('connection', (socket) => {
     activeRooms.push(_room)
 
     socket.on('START_SESSION', (callback) => {
+        console.log('SESSION_HAS_STARTED')
         studentIO.to(room).emit('SESSION_HAS_STARTED')
         callback()
     })
@@ -114,12 +121,14 @@ app.get('/', (req, res) => {
     res.send('GET REQUEST to backend server should not be allowed')
 })
 
-app.post('studentLogin', (req, res) => {
-    const { room } = req.body
+app.post('/studentLogin', (req, res) => {
+    const { room, username } = req.body
 
     const roomFound = activeRooms.filter(activeRoom => activeRoom.id === room)
 
     if (!roomFound.length) return res.status(400).send('Invalid room number')
+
+    roomFound[0].participants.push(username)
 
     res.status(200).send({ room: roomFound })
 })

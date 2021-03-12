@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { Manager } from 'socket.io-client'
+import { AppThunk } from '../index'
+import { Manager, Socket } from 'socket.io-client'
 
 export interface Account {
     username: string,
@@ -9,7 +10,7 @@ export interface Account {
 interface InstructorState {
     account: Account,
     room: number | undefined,
-    socket: boolean
+    participants: string[]
 }
 
 const initialState: InstructorState = {
@@ -18,16 +19,7 @@ const initialState: InstructorState = {
         password: 'Hansen'
     },
     room: undefined,
-    socket: false
-}
-
-const socketManager = new Manager('http://localhost:3001')
-
-// eslint-disable-next-line no-undef
-const socketEvents = (socket: SocketIOClient.Socket) => {
-    socket.on('connect', () => {
-        console.log('Client connection established')
-    })
+    participants: []
 }
 
 export const instructorSlice = createSlice({
@@ -40,17 +32,44 @@ export const instructorSlice = createSlice({
         updateRoom: (state, action: PayloadAction<number>) => {
             state.room = action.payload
         },
-        updateSocket: (state, action: PayloadAction<boolean>) => {
-            state.socket = action.payload
-
-            if (state.socket) {
-                const socket = socketManager.socket('/instructor')
-                socketEvents(socket)
-            }
+        updateParticipants: (state, action: PayloadAction<string>) => {
+            state.participants.push(action.payload)
         }
     }
 })
 
-export const { updateAccount, updateRoom, updateSocket } = instructorSlice.actions
-
+export const { updateAccount, updateRoom, updateParticipants } = instructorSlice.actions
 export default instructorSlice.reducer
+
+let socket: typeof Socket
+
+interface loginCreds {
+    username: string,
+    room: string
+}
+
+export const openSocketConnection = (loginCreds: loginCreds) : AppThunk => dispatch => {
+    const socketManager = new Manager('http://localhost:3001', {
+        query: {
+            username: loginCreds.username,
+            room: loginCreds.room
+        }
+    })
+
+    socket = socketManager.socket('/instructor')
+    socket.on('connect', () => {
+        console.log('Client connection established')
+    })
+    socket.on('UPDATE_SCOREBOARD', (score: any) => {
+        console.log('UPDATE_SCOREBOARD')
+        console.log(score)
+    })
+    socket.on('STUDENT_JOIN', (username: string) => {
+        console.log('STUDENT_JOIN')
+        dispatch(updateParticipants(username))
+    })
+}
+
+export const beginSocketSession = (): AppThunk => () => {
+    socket.emit('START_SESSION')
+}

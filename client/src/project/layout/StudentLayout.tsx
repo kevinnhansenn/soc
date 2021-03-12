@@ -1,9 +1,14 @@
 import React, { FC, useState } from 'react'
 import FadeAnimation from '../animation/FadeAnimation'
 import { STATUS_STUDENT } from '../util/Enum'
+import axios from 'axios'
+import { useAppDispatch, useAppSelector } from '../redux/hooks'
+import { openSocketConnection } from '../redux/slice/student'
 
 const height = window.innerHeight
 const width = window.innerWidth
+
+axios.defaults.baseURL = 'http://localhost:3001'
 
 interface Props {
     title: string
@@ -13,6 +18,7 @@ interface Props {
 
 const StudentLayout: FC<Props> = (prop) => {
     const [sound, setSound] = useState(false)
+    const dispatch = useAppDispatch()
 
     const RenderNavbar = () => {
         if (prop.status === STATUS_STUDENT.WAITING) {
@@ -59,12 +65,26 @@ const StudentLayout: FC<Props> = (prop) => {
             </div>
         }
 
+        const username = useAppSelector(state => state.student.username)
+        const room = useAppSelector(state => state.student.room)
+
+        const studentLogin = async () => {
+            const res = await axios.post('studentLogin', { username, room })
+
+            if (res.status === 200) {
+                dispatch(openSocketConnection({ username, room }))
+                prop.changeStatus(STATUS_STUDENT.WAITING)
+            } else {
+                // Show error message
+            }
+        }
+
         return <div className="d-flex align-items-center justify-content-end px-3 py-2">
             <div className="font-weight-bold mt-2" style={{ fontSize: 40 }}>
                 <i
                     className="bi bi-arrow-right-circle-fill"
                     style={{ fontSize: 50 }}
-                    onClick={() => prop.changeStatus(STATUS_STUDENT.WAITING)}
+                    onClick={studentLogin}
                 />
             </div>
         </div>
