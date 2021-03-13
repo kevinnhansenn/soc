@@ -3,7 +3,7 @@ import FadeAnimation from '../animation/FadeAnimation'
 import { STATUS_INSTRUCTOR } from '../util/Enum'
 import axios from 'axios'
 import { useAppSelector, useAppDispatch } from '../redux/hooks'
-import { updateRoom, openSocketConnection, beginSocketSession } from '../redux/slice/instructor'
+import { updateRoom } from '../redux/slice/instructor'
 
 axios.defaults.baseURL = 'http://localhost:3001'
 
@@ -27,10 +27,6 @@ const InstructorLayout: FC<Props> = (prop) => {
         const res = await axios.post('instructorLogin', account)
         if (res.status === 200) {
             dispatch(updateRoom(res.data.room))
-            dispatch(openSocketConnection({
-                room: res.data.room.toString(),
-                username: account.username
-            }))
             prop.changeStatus(STATUS_INSTRUCTOR.WAITING)
         } else {
             // Show error message
@@ -39,7 +35,7 @@ const InstructorLayout: FC<Props> = (prop) => {
 
     const RenderNavbar = () => {
         const beginSession = () => {
-            dispatch(beginSocketSession)
+            // dispatch(beginSocketSession)
             prop.changeStatus(STATUS_INSTRUCTOR.PRE)
         }
 

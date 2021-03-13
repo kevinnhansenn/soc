@@ -45,6 +45,7 @@ const genId = () => Math.floor(Math.random() * 100000).toString()
 const activeRooms: Room[] = []
 
 studentIO.on('connection', (socket) => {
+    console.log('Student Connected')
     const creds = socket.handshake.query
 
     const room = creds.room
@@ -86,6 +87,7 @@ studentIO.on('connection', (socket) => {
 
 instructorIO.on('connection', (socket) => {
     // CREATE_ROOM
+    console.log('Instructor Connected')
     const { username, room } = socket.handshake.query
     socket.join(room)
 
