@@ -1,13 +1,13 @@
 import React, { FC, useState, useEffect } from 'react'
 import InputGroup from 'react-bootstrap/InputGroup'
 import FormControl from 'react-bootstrap/FormControl'
-import { useAppDispatch } from '../../redux/hooks'
-import { updateAccount } from '../../redux/slice/instructor'
+import { useDispatch } from 'react-redux'
+import { updateAccount } from '../../redux/Instructor'
 
 const Portal: FC = () => {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
-    const dispatch = useAppDispatch()
+    const dispatch = useDispatch()
 
     useEffect(() => {
         dispatch(updateAccount({ username, password }))

@@ -5,6 +5,13 @@ import Student from './page/Student'
 import Instructor from './page/Instructor'
 import Testing from './page/Testing'
 
+import { Provider } from 'react-redux'
+import { InstructorStore } from './redux/Instructor'
+import { StudentStore } from './redux/Student'
+
+const instructorStore = InstructorStore()
+const studentStore = StudentStore()
+
 function Entrypoint () {
     return (
         <div className="App">
@@ -14,10 +21,14 @@ function Entrypoint () {
                         <Testing />
                     </Route>
                     <Route path="/instructor">
-                        <Instructor />
+                        <Provider store={instructorStore}>
+                            <Instructor />
+                        </Provider>
                     </Route>
                     <Route path="/">
-                        <Student />
+                        <Provider store={studentStore}>
+                            <Student />
+                        </Provider>
                     </Route>
                 </Switch>
             </Router>

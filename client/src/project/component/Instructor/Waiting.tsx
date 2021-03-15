@@ -2,7 +2,7 @@ import React, { FC, useState } from 'react'
 import Card from 'react-bootstrap/Card'
 import ListGroup from 'react-bootstrap/ListGroup'
 import Form from 'react-bootstrap/Form'
-import { useAppSelector } from '../../redux/hooks'
+import { useAppSelector } from '../../redux/Instructor'
 
 const Waiting: FC = () => {
     const [mode, setMode] = useState('0')

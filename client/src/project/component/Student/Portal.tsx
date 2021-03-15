@@ -3,8 +3,8 @@ import InputGroup from 'react-bootstrap/InputGroup'
 import FormControl from 'react-bootstrap/FormControl'
 import styled from 'styled-components'
 import { STATUS_STUDENT } from '../../util/Enum'
-import { useAppDispatch } from '../../redux/hooks'
-import { updateUsername, updateRoom } from '../../redux/slice/student'
+import { useDispatch } from 'react-redux'
+import { updateUsername, updateRoom } from '../../redux/Student'
 
 const CenterInput = styled.div`
     width: 100%;
@@ -22,7 +22,7 @@ const Portal: FC<Prop> = () => {
     const [username, setUsername] = useState('')
     const [room, setRoom] = useState('')
 
-    const dispatch = useAppDispatch()
+    const dispatch = useDispatch()
     useEffect(() => {
         dispatch(updateUsername(username))
         dispatch(updateRoom(room))

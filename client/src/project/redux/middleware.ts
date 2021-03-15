@@ -5,7 +5,7 @@ export const createSocketMiddleware = (socket: typeof Socket) => ({
     getState
 }: any) => (next: any) => (action: any) => {
     if (typeof action === 'function') {
-        action(socket, dispatch, getState)
+        action(dispatch, socket, getState)
     } else {
         return next(action)
     }

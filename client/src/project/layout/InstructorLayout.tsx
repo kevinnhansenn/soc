@@ -2,8 +2,9 @@ import React, { FC, useState } from 'react'
 import FadeAnimation from '../animation/FadeAnimation'
 import { STATUS_INSTRUCTOR } from '../util/Enum'
 import axios from 'axios'
-import { useAppSelector, useAppDispatch } from '../redux/hooks'
-import { updateRoom } from '../redux/slice/instructor'
+
+import { beginSocketSession, getAccount, openSocketConnection, postQuestion, updateRoom } from '../redux/Instructor'
+import { useDispatch, useSelector } from 'react-redux'
 
 axios.defaults.baseURL = 'http://localhost:3001'
 
@@ -19,14 +20,17 @@ interface Props {
 
 const InstructorLayout: FC<Props> = (prop) => {
     const [sound, setSound] = useState(false)
-    const account = useAppSelector(state => state.instructor.account)
-
-    const dispatch = useAppDispatch()
+    const account = useSelector(getAccount)
+    const dispatch = useDispatch()
 
     const instructorLogin = async () => {
         const res = await axios.post('instructorLogin', account)
         if (res.status === 200) {
             dispatch(updateRoom(res.data.room))
+            dispatch(openSocketConnection({
+                username: account.username,
+                room: res.data.room
+            }))
             prop.changeStatus(STATUS_INSTRUCTOR.WAITING)
         } else {
             // Show error message
@@ -34,11 +38,6 @@ const InstructorLayout: FC<Props> = (prop) => {
     }
 
     const RenderNavbar = () => {
-        const beginSession = () => {
-            // dispatch(beginSocketSession)
-            prop.changeStatus(STATUS_INSTRUCTOR.PRE)
-        }
-
         if (prop.status === STATUS_INSTRUCTOR.WAITING) {
             return <div className="d-flex align-items-center justify-content-between px-3 py-2">
                 <div>
@@ -55,7 +54,7 @@ const InstructorLayout: FC<Props> = (prop) => {
                     <i
                         className="bi bi-box-arrow-in-right"
                         style={{ fontSize: 50 }}
-                        onClick={beginSession}
+                        onClick={() => dispatch(beginSocketSession())}
                     />
                 </div>
             </div>
@@ -74,7 +73,7 @@ const InstructorLayout: FC<Props> = (prop) => {
                     <i
                         className="bi bi-check-circle"
                         style={{ fontSize: 50 }}
-                        onClick={() => prop.changeStatus(STATUS_INSTRUCTOR.POST)}
+                        onClick={() => dispatch(postQuestion())}
                     />
                 </div>
             </div>

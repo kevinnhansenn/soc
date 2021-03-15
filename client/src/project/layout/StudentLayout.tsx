@@ -2,7 +2,8 @@ import React, { FC, useState } from 'react'
 import FadeAnimation from '../animation/FadeAnimation'
 import { STATUS_STUDENT } from '../util/Enum'
 import axios from 'axios'
-import { /* useAppDispatch, */ useAppSelector } from '../redux/hooks'
+import { openSocketConnection, useAppSelector } from '../redux/Student'
+import { useDispatch } from 'react-redux'
 
 const height = window.innerHeight
 const width = window.innerWidth
@@ -17,7 +18,6 @@ interface Props {
 
 const StudentLayout: FC<Props> = (prop) => {
     const [sound, setSound] = useState(false)
-    // const dispatch = useAppDispatch()
 
     const RenderNavbar = () => {
         if (prop.status === STATUS_STUDENT.WAITING) {
@@ -67,11 +67,13 @@ const StudentLayout: FC<Props> = (prop) => {
         const username = useAppSelector(state => state.student.username)
         const room = useAppSelector(state => state.student.room)
 
+        const dispatch = useDispatch()
+
         const studentLogin = async () => {
             const res = await axios.post('studentLogin', { username, room })
 
             if (res.status === 200) {
-                // dispatch(openSocketConnection({ username, room }))
+                dispatch(openSocketConnection({ username, room }))
                 prop.changeStatus(STATUS_STUDENT.WAITING)
             } else {
                 // Show error message

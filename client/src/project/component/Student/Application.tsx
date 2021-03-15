@@ -2,6 +2,8 @@ import React, { FC } from 'react'
 import Questionnaire from './Questionnaire'
 import ReactLoading from 'react-loading'
 import { STATUS_STUDENT } from '../../util/Enum'
+import { useSelector } from 'react-redux'
+import { getWaitingStatus } from '../../redux/Student'
 
 interface Prop {
     status: STATUS_STUDENT,
@@ -9,6 +11,7 @@ interface Prop {
 }
 
 const Application: FC<Prop> = (prop) => {
+    const waitingStatus = useSelector(getWaitingStatus)
     return (
         <div className='h-100'>
             { prop.status === STATUS_STUDENT.READY || prop.status === STATUS_STUDENT.ANSWERED
@@ -27,7 +30,7 @@ const Application: FC<Prop> = (prop) => {
                             className="font-weight-bold mt-4"
                             onClick={() => prop.changeStatus(STATUS_STUDENT.READY)}
                         >
-                        Waiting for Instructor...
+                            { waitingStatus }
                         </div>
                     </div>
                 )}

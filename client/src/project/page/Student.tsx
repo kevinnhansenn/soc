@@ -1,32 +1,24 @@
-import React, { useMemo, useState } from 'react'
+import React from 'react'
 import StudentLayout from '../layout/StudentLayout'
 import Application from '../component/Student/Application'
 import Portal from '../component/Student/Portal'
 import { STATUS_STUDENT } from '../util/Enum'
-import { Provider } from 'react-redux'
-import { StudentStore } from '../redux/studentStore'
-
-let store: ReturnType<typeof StudentStore>
+import { useDispatch, useSelector } from 'react-redux'
+import { getStatus, updateStatus } from '../redux/Student'
 
 const Student = () => {
-    useMemo(() => {
-        store = StudentStore()
-    }, [store])
-
-    const [status, setStatus] = useState(STATUS_STUDENT.NOTLOGGEDIN)
+    const status = useSelector(getStatus)
+    const dispatch = useDispatch()
 
     const changeStatus = (status: STATUS_STUDENT) => {
-        setStatus(status)
+        dispatch(updateStatus(status))
     }
 
-    return (
-        <Provider store={store}>
-            <StudentLayout title="Student" status={status} changeStatus={changeStatus}>
-                {
-                    status ? <Application status={status} changeStatus={changeStatus} /> : <Portal changeStatus={changeStatus} />
-                }
-            </StudentLayout>
-        </Provider>
+    return (<StudentLayout title="Student" status={status} changeStatus={changeStatus}>
+        {
+            status ? <Application status={status} changeStatus={changeStatus} /> : <Portal changeStatus={changeStatus} />
+        }
+    </StudentLayout>
     )
 }
 

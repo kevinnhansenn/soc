@@ -1,5 +1,7 @@
 import React, { FC } from 'react'
 import { STATUS_STUDENT } from '../../util/Enum'
+// import { useSelector } from 'react-redux'
+// import { getQuestion } from '../../redux/Student'
 
 interface Prop {
     changeStatus: (status: STATUS_STUDENT) => void
@@ -8,6 +10,8 @@ interface Prop {
 const qBank = ['Amsterdam', 'Kiev', 'Paris', 'Moscow']
 
 const Questionnaire: FC<Prop> = (prop) => {
+    // const question = useSelector(getQuestion)
+
     const selectChoice = () => {
         prop.changeStatus(STATUS_STUDENT.ANSWERED)
     }

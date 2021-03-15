@@ -45,77 +45,78 @@ const genId = () => Math.floor(Math.random() * 100000).toString()
 const activeRooms: Room[] = []
 
 studentIO.on('connection', (socket) => {
-    console.log('Student Connected')
-    const creds = socket.handshake.query
+    socket.on('REGISTERED', ({ username, room }) => {
+        console.log(`REGISTERED ${username} ${room}`)
+        const roomFound = activeRooms.filter(activeRoom => activeRoom.id === room)
+        if (!roomFound.length) return socket.disconnect()
+        socket.join(room)
 
-    const room = creds.room
-    const username = creds.username
+        instructorIO.to(room).emit('STUDENT_JOIN', username)
 
-    const roomFound = activeRooms.filter(activeRoom => activeRoom.id === room)
-    if (!roomFound.length) return socket.disconnect()
-    socket.join(room)
+        // Add student to the room
+        const _room:Room = roomFound[0]
+        _room.participants.push(username)
 
-    console.log({ room })
-    instructorIO.to(room).emit('STUDENT_JOIN', username)
+        socket.on('ANSWER_THE_QUESTION', (questionId, answerId) => {
+            const _question = _.find(_room.question, (question) => question.id === questionId)
+            const correctAnswer = _.find(_question.choices, (choice) => choice.id === answerId)
 
-    // Add student to the room
-    const _room:Room = roomFound[0]
-    _room.participants.push(username)
+            const response = {
+                room,
+                student: username,
+                questionId,
+                answerId,
+                result: 0
+            }
 
-    socket.on('ANSWER_THE_QUESTION', (questionId, answerId) => {
-        const _question = _.find(_room.question, (question) => question.id === questionId)
-        const correctAnswer = _.find(_question.choices, (choice) => choice.id === answerId)
+            if (correctAnswer.isAnswer) {
+                response.result = 1
+            } else {
+                response.result = -1
+            }
 
-        const response = {
-            room,
-            student: username,
-            questionId,
-            answerId,
-            result: 0
-        }
-
-        if (correctAnswer.isAnswer) {
-            response.result = 1
-        } else {
-            response.result = -1
-        }
-
-        studentIO.to(room).emit('UPDATE_SCOREBOARD', response)
-        instructorIO.to(room).emit('UPDATE_SCOREBOARD', response)
+            studentIO.to(room).emit('UPDATE_SCOREBOARD', response)
+            instructorIO.to(room).emit('UPDATE_SCOREBOARD', response)
+        })
     })
 })
 
 instructorIO.on('connection', (socket) => {
-    // CREATE_ROOM
-    console.log('Instructor Connected')
-    const { username, room } = socket.handshake.query
-    socket.join(room)
+    socket.on('REGISTERED', ({ username, room }) => {
+        console.log(`REGISTERED ${username} ${room}`)
+        socket.join(room)
+        const _room: Room = {
+            id: room,
+            host: username,
+            participants: [],
+            question: []
+        }
 
-    const _room: Room = {
-        id: room,
-        host: username,
-        participants: [],
-        question: []
-    }
+        activeRooms.push(_room)
 
-    activeRooms.push(_room)
+        socket.on('START_SESSION', (callback) => {
+            console.log('SESSION_HAS_STARTED')
+            studentIO.to(room).emit('SESSION_HAS_STARTED')
+            callback()
+        })
 
-    socket.on('START_SESSION', (callback) => {
-        console.log('SESSION_HAS_STARTED')
-        studentIO.to(room).emit('SESSION_HAS_STARTED')
-        callback()
-    })
+        socket.on('POST_QUESTION', (question, choices, callback) => {
+            console.log('POST_QUESTION')
+            _room.question.push({
+                id: genId(),
+                question,
+                choices
+            })
+            console.log({ question, choices })
+            studentIO.to(room).emit('QUESTION_HAS_BEEN_POSTED', { question, choices })
+            callback()
+        })
 
-    socket.on('POST_QUESTION', (question, callback) => {
-        _room.question.push(question)
-        studentIO.to(room).emit('QUESTION_HAS_BEEN_POSTED', question)
-        callback()
-    })
-
-    socket.on('FINISH_SESSION', (callback) => {
-        _.filter(activeRooms, activeRoom => activeRoom.id !== room)
-        studentIO.to(room).emit('SESSION_HAS_ENDED')
-        callback()
+        socket.on('FINISH_SESSION', (callback) => {
+            _.filter(activeRooms, activeRoom => activeRoom.id !== room)
+            studentIO.to(room).emit('SESSION_HAS_ENDED')
+            callback()
+        })
     })
 })
 
