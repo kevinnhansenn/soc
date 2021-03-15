@@ -14,8 +14,6 @@ const Portal: FC = () => {
     }, [username, password])
 
     return <div className='px-5 h-100 flex-column flex-center align-items-start'>
-        <small>{ username }</small>
-        <small>{ password }</small>
         <div className='text-left font-weight-bold mb-2' style={{ fontSize: 28 }}>
             Instructor ID
         </div>

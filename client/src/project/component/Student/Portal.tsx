@@ -31,7 +31,6 @@ const Portal: FC<Prop> = () => {
     return (
         <div className="w-100 h-100 px-5 d-flex align-items-center">
             <CenterInput>
-                <small>{ username }</small> - <small>{ room }</small>
                 <div
                     className="text-center font-weight-bold mb-2"
                     style={{ fontSize: 30 }}

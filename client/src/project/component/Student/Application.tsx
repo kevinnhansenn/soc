@@ -16,7 +16,7 @@ const Application: FC<Prop> = (prop) => {
         <div className='h-100'>
             { prop.status === STATUS_STUDENT.READY || prop.status === STATUS_STUDENT.ANSWERED
                 ? (
-                    <Questionnaire changeStatus={prop.changeStatus} />
+                    <Questionnaire />
                 )
                 : (
                     <div className="flex-center flex-column h-100">

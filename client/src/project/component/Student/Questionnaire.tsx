@@ -1,37 +1,30 @@
 import React, { FC } from 'react'
-import { STATUS_STUDENT } from '../../util/Enum'
-// import { useSelector } from 'react-redux'
-// import { getQuestion } from '../../redux/Student'
+import { useDispatch, useSelector } from 'react-redux'
+import { answerQuestion, getQuestion } from '../../redux/Student'
+import { Choice } from '../../redux/Instructor'
 
-interface Prop {
-    changeStatus: (status: STATUS_STUDENT) => void
-}
+const Questionnaire: FC = () => {
+    const question = useSelector(getQuestion)
 
-const qBank = ['Amsterdam', 'Kiev', 'Paris', 'Moscow']
-
-const Questionnaire: FC<Prop> = (prop) => {
-    // const question = useSelector(getQuestion)
-
-    const selectChoice = () => {
-        prop.changeStatus(STATUS_STUDENT.ANSWERED)
-    }
+    const dispatch = useDispatch()
+    const selectChoice = (choice: Choice) => dispatch(answerQuestion(question!.id, choice))
 
     return (
         <div className="h-100">
             <div className={'flex-center h-25 pb-3'} style={{ fontSize: 32 }}>
-                What is the capital city of Holland?
+                { question?.question }
             </div>
             <div className="d-flex h-75" style={{ flexWrap: 'wrap' }}>
-                {qBank.map((question, index) => (
+                { question?.choices.map(choice => (
                     <div
-                        key={index}
-                        onClick={selectChoice}
+                        key={choice.id}
+                        onClick={() => selectChoice(choice)}
                         style={{
                             fontSize: 24
                         }}
                         className={'flex-center btn btn-info border text-white h-50 w-50 '}
                     >
-                        {question}
+                        { choice.text }
                     </div>
                 ))}
             </div>

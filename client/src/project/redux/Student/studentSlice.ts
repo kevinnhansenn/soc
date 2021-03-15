@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppThunk, RootState } from './studentStore'
-// import { Manager } from 'socket.io-client'
 import { STATUS_STUDENT } from '../../util/Enum'
 import { Choice } from '../Instructor'
 
-interface Question {
+interface QuestionSet {
+    id: string,
     question: string,
     choices: Choice[]
 }
@@ -14,7 +14,9 @@ interface StudentState {
     room: string,
     status: STATUS_STUDENT,
     waitingStatus: 'Waiting other students to join...' | 'Instructor is making the question...',
-    question: Question | null
+    question: QuestionSet | null,
+    currentAnswer: Choice | null,
+    result: boolean[]
 }
 
 const initialState: StudentState = {
@@ -22,7 +24,9 @@ const initialState: StudentState = {
     room: '',
     status: STATUS_STUDENT.NOTLOGGEDIN,
     waitingStatus: 'Waiting other students to join...',
-    question: null
+    question: null,
+    currentAnswer: null,
+    result: []
 }
 
 export const studentSlice = createSlice({
@@ -41,8 +45,20 @@ export const studentSlice = createSlice({
         updateWaitingStatus: (state, action: PayloadAction<StudentState['waitingStatus']>) => {
             state.waitingStatus = action.payload
         },
-        updateQuestion: (state, action: PayloadAction<Question>) => {
+        updateQuestion: (state, action: PayloadAction<QuestionSet>) => {
             state.question = action.payload
+        },
+        updateCurrentAnswer: (state, action: PayloadAction<Choice>) => {
+            state.currentAnswer = action.payload
+        },
+        updateResult: (state, action: PayloadAction<boolean>) => {
+            state.result.push(action.payload)
+        },
+        resetQuestion: state => {
+            state.question = null
+        },
+        resetCurrentAnswer: state => {
+            state.currentAnswer = null
         }
     }
 })
@@ -53,13 +69,17 @@ export const {
     updateRoom,
     updateStatus,
     updateWaitingStatus,
-    updateQuestion
+    updateQuestion,
+    updateCurrentAnswer,
+    updateResult,
+    resetQuestion,
+    resetCurrentAnswer
 } = studentSlice.actions
 export default studentSlice.reducer
 
 // SELECTOR
 export const getUsername = (state: RootState) => state.student.username
-export const getRoom = (state: RootState) => state.student.room
+export const getResult = (state: RootState) => state.student.result
 export const getStatus = (state: RootState) => state.student.status
 export const getWaitingStatus = (state: RootState) => state.student.waitingStatus
 export const getQuestion = (state: RootState) => state.student.question
@@ -70,7 +90,7 @@ interface LoginCreds {
 }
 
 // DISPATCHER
-export const openSocketConnection = (loginCreds: LoginCreds) : AppThunk => (dispatch, socket) => {
+export const openSocketConnection = (loginCreds: LoginCreds) : AppThunk => (dispatch, socket, getState) => {
     socket.connect()
     socket.emit('REGISTERED', {
         username: loginCreds.username,
@@ -84,7 +104,7 @@ export const openSocketConnection = (loginCreds: LoginCreds) : AppThunk => (disp
         console.log('SESSION_HAS_STARTED')
         dispatch(updateWaitingStatus('Instructor is making the question...'))
     })
-    socket.on('QUESTION_HAS_BEEN_POSTED', (question: Question) => {
+    socket.on('QUESTION_HAS_BEEN_POSTED', (question: QuestionSet) => {
         console.log('QUESTION_HAS_BEEN_POSTED')
         console.log(question)
         dispatch(updateQuestion(question))
@@ -92,5 +112,18 @@ export const openSocketConnection = (loginCreds: LoginCreds) : AppThunk => (disp
     })
     socket.on('SESSION_HAS_ENDED', () => {
         console.log('SESSION_HAS_ENDED')
+        const result = !!getState().student.currentAnswer?.answer
+
+        dispatch(resetQuestion())
+        dispatch(updateResult(result))
+        dispatch(resetCurrentAnswer())
+        dispatch(updateStatus(STATUS_STUDENT.WAITING))
     })
+}
+
+export const answerQuestion = (questionId: string, choice: Choice) : AppThunk => (dispatch, socket, getState) => {
+    if (getState().student.status !== STATUS_STUDENT.READY) return
+    dispatch(updateCurrentAnswer(choice))
+    dispatch(updateStatus(STATUS_STUDENT.ANSWERED))
+    socket.emit('ANSWER_THE_QUESTION', choice)
 }

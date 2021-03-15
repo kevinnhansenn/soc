@@ -2,8 +2,8 @@ import React, { FC, useState } from 'react'
 import FadeAnimation from '../animation/FadeAnimation'
 import { STATUS_STUDENT } from '../util/Enum'
 import axios from 'axios'
-import { openSocketConnection, useAppSelector } from '../redux/Student'
-import { useDispatch } from 'react-redux'
+import { getResult, openSocketConnection, useAppSelector } from '../redux/Student'
+import { useDispatch, useSelector } from 'react-redux'
 
 const height = window.innerHeight
 const width = window.innerWidth
@@ -18,6 +18,13 @@ interface Props {
 
 const StudentLayout: FC<Props> = (prop) => {
     const [sound, setSound] = useState(false)
+    const result = useSelector(getResult)
+    const correct = result.filter(r => r).length
+
+    const ScoreBoard = () => <div className="font-weight-bold mt-2" style={{ fontSize: 40 }}>
+        <span className="text-success">{ correct }</span>
+        <span> / { result.length }</span>
+    </div>
 
     const RenderNavbar = () => {
         if (prop.status === STATUS_STUDENT.WAITING) {
@@ -29,10 +36,7 @@ const StudentLayout: FC<Props> = (prop) => {
                         onClick={() => prop.changeStatus(STATUS_STUDENT.NOTLOGGEDIN)}
                     />
                 </div>
-                <div className="font-weight-bold mt-2" style={{ fontSize: 40 }}>
-                    <span className="text-success">0</span>
-                    <span> / 0</span>
-                </div>
+                <ScoreBoard />
             </div>
         }
 
@@ -42,10 +46,7 @@ const StudentLayout: FC<Props> = (prop) => {
                     className='text-warning font-weight-bold'
                     style={{ fontSize: 30 }}
                 >Not Answered</div>
-                <div className="font-weight-bold mt-2" style={{ fontSize: 40 }}>
-                    <span className="text-success">0</span>
-                    <span> / 0</span>
-                </div>
+                <ScoreBoard />
             </div>
         }
 
@@ -57,10 +58,7 @@ const StudentLayout: FC<Props> = (prop) => {
                     style={{ fontSize: 30 }}
                 > Confirmed
                 </div>
-                <div className="font-weight-bold mt-2" style={{ fontSize: 40 }}>
-                    <span className="text-success">0</span>
-                    <span> / 0</span>
-                </div>
+                <ScoreBoard />
             </div>
         }
 

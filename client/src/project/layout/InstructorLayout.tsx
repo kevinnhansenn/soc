@@ -3,7 +3,14 @@ import FadeAnimation from '../animation/FadeAnimation'
 import { STATUS_INSTRUCTOR } from '../util/Enum'
 import axios from 'axios'
 
-import { beginSocketSession, getAccount, openSocketConnection, postQuestion, updateRoom } from '../redux/Instructor'
+import {
+    beginSocketSession,
+    endQuestionSession,
+    getAccount,
+    openSocketConnection,
+    postQuestion,
+    updateRoom
+} from '../redux/Instructor'
 import { useDispatch, useSelector } from 'react-redux'
 
 axios.defaults.baseURL = 'http://localhost:3001'
@@ -79,20 +86,22 @@ const InstructorLayout: FC<Props> = (prop) => {
             </div>
         }
 
+        const endSession = () => dispatch(endQuestionSession())
+
         if (prop.status === STATUS_INSTRUCTOR.POST) {
             return <div className="d-flex align-items-center justify-content-between px-3 py-2">
                 <div>
                     <i
                         className="bi bi-arrow-left-circle-fill"
                         style={{ fontSize: 50 }}
-                        onClick={() => prop.changeStatus(STATUS_INSTRUCTOR.PRE)}
+                        onClick={endSession}
                     />
                 </div>
                 <div>
                     <i
                         className="bi bi-check-circle"
                         style={{ fontSize: 50 }}
-                        onClick={() => prop.changeStatus(STATUS_INSTRUCTOR.PRE)}
+                        onClick={endSession}
                     />
                 </div>
             </div>

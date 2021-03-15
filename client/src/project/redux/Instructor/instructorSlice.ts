@@ -14,11 +14,17 @@ export interface Choice {
     placeholder: string
 }
 
+interface StudentAnswer {
+    student: string,
+    choice: Choice
+}
+
 interface InstructorState {
     account: Account,
     room: number | undefined,
     status: STATUS_INSTRUCTOR,
     participants: string[],
+    studentAnswers: StudentAnswer[],
     question: string,
     choices: Choice[]
 }
@@ -31,6 +37,7 @@ const initialState: InstructorState = {
     room: undefined,
     status: STATUS_INSTRUCTOR.NOTLOGGEDIN,
     participants: [],
+    studentAnswers: [],
     question: '',
     choices: [
         {
@@ -73,6 +80,9 @@ export const instructorSlice = createSlice({
         updateParticipants: (state, action: PayloadAction<string>) => {
             state.participants.push(action.payload)
         },
+        updateStudentAnswers: (state, action: PayloadAction<StudentAnswer>) => {
+            state.studentAnswers.push(action.payload)
+        },
         updateStatus: (state, action: PayloadAction<STATUS_INSTRUCTOR>) => {
             state.status = action.payload
         },
@@ -81,6 +91,40 @@ export const instructorSlice = createSlice({
         },
         updateQuestion: (state, action: PayloadAction<string>) => {
             state.question = action.payload
+        },
+        resetStudentAnswers: (state) => {
+            state.studentAnswers = []
+        },
+        resetChoices: (state) => {
+            state.choices = [
+                {
+                    id: 1,
+                    text: '',
+                    answer: true,
+                    placeholder: 'Required'
+                },
+                {
+                    id: 2,
+                    text: '',
+                    answer: false,
+                    placeholder: '(Optional)'
+                },
+                {
+                    id: 3,
+                    text: '',
+                    answer: false,
+                    placeholder: '(Optional)'
+                },
+                {
+                    id: 4,
+                    text: '',
+                    answer: false,
+                    placeholder: '(Optional)'
+                }
+            ]
+        },
+        resetQuestion: (state) => {
+            state.question = ''
         }
     }
 })
@@ -92,15 +136,21 @@ export const {
     updateParticipants,
     updateStatus,
     updateChoices,
-    updateQuestion
+    updateQuestion,
+    updateStudentAnswers,
+    resetChoices,
+    resetQuestion,
+    resetStudentAnswers
 } = instructorSlice.actions
 export default instructorSlice.reducer
 
 // SELECTOR
 export const getStatus = (state: RootState) => state.instructor.status
 export const getAccount = (state: RootState) => state.instructor.account
+export const getParticipants = (state: RootState) => state.instructor.participants
+export const getRoom = (state: RootState) => state.instructor.room
 export const getChoices = (state: RootState) => state.instructor.choices
-export const getQuestion = (state: RootState) => state.instructor.question
+export const getStudentAnswers = (state: RootState) => state.instructor.studentAnswers
 
 interface loginCreds {
     username: string,
@@ -118,9 +168,12 @@ export const openSocketConnection = (loginCreds: loginCreds) : AppThunk => (disp
     socket.on('connect', () => {
         console.log('[Instructor] cClient connection has been established')
     })
-    socket.on('UPDATE_SCOREBOARD', (score: any) => {
+    socket.on('UPDATE_SCOREBOARD', (studentName: string, choice: Choice) => {
         console.log('UPDATE_SCOREBOARD')
-        console.log(score)
+        dispatch(updateStudentAnswers({
+            student: studentName,
+            choice
+        }))
     })
     socket.on('STUDENT_JOIN', (username: string) => {
         console.log('STUDENT_JOIN')
@@ -140,5 +193,14 @@ export const postQuestion = (): AppThunk => (dispatch, socket, getState) => {
 
     socket.emit('POST_QUESTION', question, choices, () => {
         dispatch(updateStatus(STATUS_INSTRUCTOR.POST))
+    })
+}
+
+export const endQuestionSession = (): AppThunk => (dispatch, socket) => {
+    socket.emit('FINISH_SESSION', () => {
+        dispatch(resetChoices())
+        dispatch(resetQuestion())
+        dispatch(resetStudentAnswers())
+        dispatch(updateStatus(STATUS_INSTRUCTOR.PRE))
     })
 }

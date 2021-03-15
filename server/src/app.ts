@@ -46,74 +46,47 @@ const activeRooms: Room[] = []
 
 studentIO.on('connection', (socket) => {
     socket.on('REGISTERED', ({ username, room }) => {
-        console.log(`REGISTERED ${username} ${room}`)
-        const roomFound = activeRooms.filter(activeRoom => activeRoom.id === room)
-        if (!roomFound.length) return socket.disconnect()
-        socket.join(room)
+        const roomFound = activeRooms.find(activeRoom => activeRoom.id === room)
+        if (!roomFound) return socket.disconnect()
 
+        socket.join(room)
         instructorIO.to(room).emit('STUDENT_JOIN', username)
 
-        // Add student to the room
-        const _room:Room = roomFound[0]
-        _room.participants.push(username)
+        socket.on('ANSWER_THE_QUESTION', (choice: Choice) => {
+            console.log('ANSWER_THE_QUESTION')
 
-        socket.on('ANSWER_THE_QUESTION', (questionId, answerId) => {
-            const _question = _.find(_room.question, (question) => question.id === questionId)
-            const correctAnswer = _.find(_question.choices, (choice) => choice.id === answerId)
-
-            const response = {
-                room,
-                student: username,
-                questionId,
-                answerId,
-                result: 0
-            }
-
-            if (correctAnswer.isAnswer) {
-                response.result = 1
-            } else {
-                response.result = -1
-            }
-
-            studentIO.to(room).emit('UPDATE_SCOREBOARD', response)
-            instructorIO.to(room).emit('UPDATE_SCOREBOARD', response)
+            // studentIO.to(room).emit('UPDATE_SCOREBOARD', activeRooms)
+            instructorIO.to(room).emit('UPDATE_SCOREBOARD', username, choice)
         })
     })
 })
 
 instructorIO.on('connection', (socket) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     socket.on('REGISTERED', ({ username, room }) => {
-        console.log(`REGISTERED ${username} ${room}`)
+        const roomFound = activeRooms.find(activeRoom => activeRoom.id === room)
+        if (!roomFound) return socket.disconnect()
+
         socket.join(room)
-        const _room: Room = {
-            id: room,
-            host: username,
-            participants: [],
-            question: []
-        }
-
-        activeRooms.push(_room)
-
         socket.on('START_SESSION', (callback) => {
-            console.log('SESSION_HAS_STARTED')
             studentIO.to(room).emit('SESSION_HAS_STARTED')
             callback()
         })
 
         socket.on('POST_QUESTION', (question, choices, callback) => {
-            console.log('POST_QUESTION')
-            _room.question.push({
+            const questionSet = {
                 id: genId(),
                 question,
                 choices
-            })
-            console.log({ question, choices })
-            studentIO.to(room).emit('QUESTION_HAS_BEEN_POSTED', { question, choices })
+            }
+
+            roomFound.question.push(questionSet)
+            instructorIO.to(room).emit('UPDATE_PROGRESS', roomFound)
+            studentIO.to(room).emit('QUESTION_HAS_BEEN_POSTED', questionSet)
             callback()
         })
 
         socket.on('FINISH_SESSION', (callback) => {
-            _.filter(activeRooms, activeRoom => activeRoom.id !== room)
             studentIO.to(room).emit('SESSION_HAS_ENDED')
             callback()
         })
@@ -127,11 +100,11 @@ app.get('/', (req, res) => {
 app.post('/studentLogin', (req, res) => {
     const { room, username } = req.body
 
-    const roomFound = activeRooms.filter(activeRoom => activeRoom.id === room)
+    const roomFound = activeRooms.find(activeRoom => activeRoom.id === room)
 
-    if (!roomFound.length) return res.status(400).send('Invalid room number')
+    if (!roomFound) return res.status(400).send('Invalid room number')
 
-    roomFound[0].participants.push(username)
+    roomFound.participants.push(username)
 
     res.status(200).send({ room: roomFound })
 })
@@ -143,7 +116,8 @@ app.post('/instructorLogin', (req, res) => {
     activeRooms.push({
         id: room,
         host: username,
-        participants: []
+        participants: [],
+        question: []
     })
     res.status(200).send({ room })
 })
