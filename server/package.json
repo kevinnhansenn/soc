@@ -7,7 +7,7 @@
         "start": "ts-node-dev --respawn src/app"
     },
     "keywords": [],
-    "author": "",
+    "author": "Kevin Hansen",
     "license": "ISC",
     "devDependencies": {
         "@types/express": "^4.17.11",
