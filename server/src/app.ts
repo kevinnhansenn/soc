@@ -53,9 +53,6 @@ studentIO.on('connection', (socket) => {
         instructorIO.to(room).emit('STUDENT_JOIN', username)
 
         socket.on('ANSWER_THE_QUESTION', (choice: Choice) => {
-            console.log('ANSWER_THE_QUESTION')
-
-            // studentIO.to(room).emit('UPDATE_SCOREBOARD', activeRooms)
             instructorIO.to(room).emit('UPDATE_SCOREBOARD', username, choice)
         })
     })

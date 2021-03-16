@@ -9,6 +9,8 @@ interface QuestionSet {
     choices: Choice[]
 }
 
+type ResultInfo = 'IDLE' | 'CORRECT' | 'WRONG'
+
 interface StudentState {
     username: string,
     room: string,
@@ -16,7 +18,8 @@ interface StudentState {
     waitingStatus: 'Waiting other students to join...' | 'Instructor is making the question...',
     question: QuestionSet | null,
     currentAnswer: Choice | null,
-    result: boolean[]
+    result: boolean[],
+    resultInfo: ResultInfo
 }
 
 const initialState: StudentState = {
@@ -26,7 +29,8 @@ const initialState: StudentState = {
     waitingStatus: 'Waiting other students to join...',
     question: null,
     currentAnswer: null,
-    result: []
+    result: [],
+    resultInfo: 'IDLE'
 }
 
 export const studentSlice = createSlice({
@@ -54,11 +58,17 @@ export const studentSlice = createSlice({
         updateResult: (state, action: PayloadAction<boolean>) => {
             state.result.push(action.payload)
         },
+        updateResultInfo: (state, action: PayloadAction<ResultInfo>) => {
+            state.resultInfo = action.payload
+        },
         resetQuestion: state => {
             state.question = null
         },
         resetCurrentAnswer: state => {
             state.currentAnswer = null
+        },
+        resetResultInfo: state => {
+            state.resultInfo = 'IDLE'
         }
     }
 })
@@ -72,8 +82,10 @@ export const {
     updateQuestion,
     updateCurrentAnswer,
     updateResult,
+    updateResultInfo,
     resetQuestion,
-    resetCurrentAnswer
+    resetCurrentAnswer,
+    resetResultInfo
 } = studentSlice.actions
 export default studentSlice.reducer
 
@@ -83,6 +95,8 @@ export const getResult = (state: RootState) => state.student.result
 export const getStatus = (state: RootState) => state.student.status
 export const getWaitingStatus = (state: RootState) => state.student.waitingStatus
 export const getQuestion = (state: RootState) => state.student.question
+export const getResultInfo = (state: RootState) => state.student.resultInfo
+export const getCurrentAnswer = (state: RootState) => state.student.currentAnswer
 
 interface LoginCreds {
     username: string,
@@ -97,27 +111,29 @@ export const openSocketConnection = (loginCreds: LoginCreds) : AppThunk => (disp
         room: loginCreds.room
     })
     socket.on('UPDATE_SCOREBOARD', (score: any) => {
-        console.log('UPDATE_SCOREBOARD')
         console.log(score)
     })
     socket.on('SESSION_HAS_STARTED', () => {
-        console.log('SESSION_HAS_STARTED')
         dispatch(updateWaitingStatus('Instructor is making the question...'))
     })
     socket.on('QUESTION_HAS_BEEN_POSTED', (question: QuestionSet) => {
-        console.log('QUESTION_HAS_BEEN_POSTED')
-        console.log(question)
         dispatch(updateQuestion(question))
         dispatch(updateStatus(STATUS_STUDENT.READY))
     })
     socket.on('SESSION_HAS_ENDED', () => {
-        console.log('SESSION_HAS_ENDED')
         const result = !!getState().student.currentAnswer?.answer
+        dispatch(updateResultInfo(result ? 'CORRECT' : 'WRONG'))
 
-        dispatch(resetQuestion())
-        dispatch(updateResult(result))
-        dispatch(resetCurrentAnswer())
-        dispatch(updateStatus(STATUS_STUDENT.WAITING))
+        // Delay 7 second
+        setTimeout(() => {
+            dispatch(updateStatus(STATUS_STUDENT.WAITING))
+            setTimeout(() => {
+                dispatch(resetQuestion())
+                dispatch(updateResult(result))
+                dispatch(resetCurrentAnswer())
+                dispatch(resetResultInfo())
+            })
+        }, 10000)
     })
 }
 

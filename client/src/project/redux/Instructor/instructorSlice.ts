@@ -198,9 +198,9 @@ export const postQuestion = (): AppThunk => (dispatch, socket, getState) => {
 
 export const endQuestionSession = (): AppThunk => (dispatch, socket) => {
     socket.emit('FINISH_SESSION', () => {
+        dispatch(updateStatus(STATUS_INSTRUCTOR.PRE))
         dispatch(resetChoices())
         dispatch(resetQuestion())
         dispatch(resetStudentAnswers())
-        dispatch(updateStatus(STATUS_INSTRUCTOR.PRE))
     })
 }
