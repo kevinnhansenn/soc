@@ -87,6 +87,16 @@ instructorIO.on('connection', (socket) => {
             studentIO.to(room).emit('SESSION_HAS_ENDED')
             callback()
         })
+
+        socket.on('GO_TO_WAITING_ROOM', (callback) => {
+            studentIO.to(room).emit('WAITING_AGAIN')
+            callback()
+        })
+
+        socket.on('CLOSE_SESSION', (callback) => {
+            studentIO.to(room).emit('SESSION_ENDED')
+            callback()
+        })
     })
 })
 

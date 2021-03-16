@@ -133,7 +133,16 @@ export const openSocketConnection = (loginCreds: LoginCreds) : AppThunk => (disp
                 dispatch(resetCurrentAnswer())
                 dispatch(resetResultInfo())
             })
-        }, 10000)
+        }, 5000)
+    })
+
+    socket.on('WAITING_AGAIN', () => {
+        dispatch(updateWaitingStatus('Waiting other students to join...'))
+        dispatch(updateStatus(STATUS_STUDENT.WAITING))
+    })
+
+    socket.on('SESSION_ENDED', () => {
+        dispatch(updateStatus(STATUS_STUDENT.NOTLOGGEDIN))
     })
 }
 

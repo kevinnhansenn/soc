@@ -5,7 +5,9 @@ import axios from 'axios'
 
 import {
     beginSocketSession,
+    closeSession,
     endQuestionSession,
+    exitToWaitingRoom,
     getAccount,
     openSocketConnection,
     postQuestion,
@@ -51,7 +53,7 @@ const InstructorLayout: FC<Props> = (prop) => {
                     <i
                         className="bi bi-box-arrow-left"
                         style={{ fontSize: 48 }}
-                        onClick={() => prop.changeStatus(STATUS_INSTRUCTOR.NOTLOGGEDIN)}
+                        onClick={() => dispatch(closeSession())}
                     />
                 </div>
                 <div className="font-weight-bold" style={{ fontSize: 40 }}>
@@ -73,7 +75,7 @@ const InstructorLayout: FC<Props> = (prop) => {
                     <i
                         className="bi bi-arrow-left-circle-fill"
                         style={{ fontSize: 50 }}
-                        onClick={() => prop.changeStatus(STATUS_INSTRUCTOR.WAITING)}
+                        onClick={() => dispatch(exitToWaitingRoom())}
                     />
                 </div>
                 <div>
@@ -86,22 +88,20 @@ const InstructorLayout: FC<Props> = (prop) => {
             </div>
         }
 
-        const endSession = () => dispatch(endQuestionSession())
-
         if (prop.status === STATUS_INSTRUCTOR.POST) {
             return <div className="d-flex align-items-center justify-content-between px-3 py-2">
                 <div>
                     <i
                         className="bi bi-arrow-left-circle-fill"
                         style={{ fontSize: 50 }}
-                        onClick={endSession}
+                        onClick={() => dispatch(endQuestionSession())}
                     />
                 </div>
                 <div>
                     <i
                         className="bi bi-check-circle"
                         style={{ fontSize: 50 }}
-                        onClick={endSession}
+                        onClick={() => dispatch(endQuestionSession())}
                     />
                 </div>
             </div>

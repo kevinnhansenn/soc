@@ -204,3 +204,15 @@ export const endQuestionSession = (): AppThunk => (dispatch, socket) => {
         dispatch(resetStudentAnswers())
     })
 }
+
+export const exitToWaitingRoom = () : AppThunk => (dispatch, socket) => {
+    socket.emit('GO_TO_WAITING_ROOM', () => {
+        dispatch(updateStatus(STATUS_INSTRUCTOR.WAITING))
+    })
+}
+
+export const closeSession = () : AppThunk => (dispatch, socket) => {
+    socket.emit('CLOSE_SESSION', () => {
+        dispatch(updateStatus(STATUS_INSTRUCTOR.NOTLOGGEDIN))
+    })
+}
